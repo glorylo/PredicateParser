@@ -35,7 +35,7 @@ namespace Parser
             profile2.Location = "Burnaby";
 
 
-            var s = @"Location == ""Vancouver""";
+            var s = @"Age == 34";
             var pred = SimpleExpression.PredicateParser<IDictionary<string, object>>.Parse(s);
             //var pred = SimpleExpression.PredicateParser<Profile>.Parse(s);
             Console.WriteLine("String: {0}", s);

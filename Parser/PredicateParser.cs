@@ -100,24 +100,21 @@ using System.Text.RegularExpressions;
           /// <summary>create a constant of a value</summary>
           private static ConstantExpression Const(object v) { return Expression.Constant(v); }
 
-          /// <summary>create lambda parameter field or property access</summary>
+          /// <summary>create lambda parameter field or property access.</summary>
           private Expression ParameterMember( string s)
           {
-              var sourceType = typeof (TData);
-              if (typeof(IDictionary<string,object>).IsAssignableFrom(sourceType))
-              {
-                  Expression key = Expression.Constant(s, typeof(string));
-                  var result = Expression.Parameter(typeof(object), "result");
-                  var block = Expression.Block(
-                    new[] { result },               //make the result a variable in scope for the block           
-                    Expression.Assign(result, Expression.Property(_param, "Item", key)),
-                    result                          //last value Expression becomes the return of the block 
+              if (!typeof (IDictionary<string, object>).IsAssignableFrom(typeof (TData)))
+                  return Expression.PropertyOrField(_param, s);
+
+              Expression key = Expression.Constant(s, typeof(string));
+              var result = Expression.Parameter(typeof(object), "result");
+              var block = Expression.Block(
+                  new[] { result },               //make the result a variable in scope for the block           
+                  Expression.Assign(result, Expression.Property(_param, "Item", key)),
+                  result                          //last value Expression becomes the return of the block 
                   );
 
-                  return block;
-              }
-
-              return Expression.PropertyOrField(_param, s);
+              return block;
           }
 
           /// <summary>create lambda expression</summary>
