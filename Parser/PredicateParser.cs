@@ -9,16 +9,18 @@ using System.Text.RegularExpressions;
       public abstract class PredicateParser
       {
           #region scanner
+
           /// <summary>tokenizer pattern: Optional-SpaceS...Token...Optional-Spaces</summary>
           private static readonly string _pattern = @"\s*(" + string.Join("|", new string[]
           {
               // operators and punctuation that are longer than one char: longest first
-              string.Join("|", new string[] { "||", "&&", "==", "!=", "<=", ">=" }.Select(e => Regex.Escape(e))),
-              @"""(?:\\.|[^""])*""",  // string
-              @"\d+(?:\.\d+)?",       // number with optional decimal part
-              @"\w+",                 // word
-              @"\S",                  // other 1-char tokens (or eat up one character in case of an error)
-          }) + @")\s*";
+              string.Join("|", new string[] {"||", "&&", "==", "!=", "<=", ">="}.Select(e => Regex.Escape(e))),
+              @"""(?:\\.|[^""])*""", // string
+              @"\d+(?:\.\d+)?", // number with optional decimal part
+              @"\w+", // word
+              @"\[(?:\s*)((?:\w+\s*)+)(?:\s*)\]", // white space words in square brackets
+      @"\S", // other 1-char tokens (or eat up one character in case of an error)
+      }) + @")\s*";
           /// <summary>get 1st char of current token (or a Space if no 1st char is obtained)</summary>
           private char Ch { get { return string.IsNullOrEmpty(Curr) ? ' ' : Curr[0]; } }
           /// <summary>move one token ahead</summary><returns>true = moved ahead, false = end of stream</returns>
@@ -35,7 +37,8 @@ using System.Text.RegularExpressions;
           protected bool IsNumber { get { return char.IsNumber(Ch); } }
           protected bool IsDouble { get { return IsNumber && Curr.Contains('.'); } }
           protected bool IsString { get { return Ch == '"'; } }
-          protected bool IsIdent { get { char c = Ch; return char.IsLower(c) || char.IsUpper(c) || c == '_'; } }
+          protected bool IsWhiteSpaceIdent { get { return Ch == '['; }}
+          protected bool IsIdent { get { char c = Ch; return IsWhiteSpaceIdent || char.IsLower(c) || char.IsUpper(c) || c == '_'; } }
           /// <summary>throw an argument exception</summary>
           protected void Abort(string msg) { throw new ArgumentException("Error: " + (msg ?? "unknown error")); }
           /// <summary>get the current item of the stream or an empty string after the end</summary>
@@ -135,7 +138,13 @@ using System.Text.RegularExpressions;
           private Expression ParseRelation()   { return ParseBinary(ParseUnary, "<", "<=", ">=", ">"); }
           private Expression ParseUnary()      { return CurrOpAndNext("!") != null ? _unOp["!"](ParseUnary())
                                                  : ParsePrimary(); }
-          private Expression ParseIdent()      { return ParameterMember(CurrOptNext); }
+
+          private Expression ParseIdent()
+          {
+              return !IsWhiteSpaceIdent ? ParameterMember(CurrOptNext)
+                  : ParameterMember(Regex.Replace(
+                    CurrOptNext, @"^\[(?:\s*)(.*?)(?:\s*)\]$", m => m.Groups[1].Value));
+          }      
           private Expression ParseString()     { return Const(Regex.Replace(CurrOptNext, "^\"(.*)\"$",
                                                  m => m.Groups[1].Value)); }
           private Expression ParseNumber()     { if (IsDouble) return Const(double.Parse(CurrOptNext));
