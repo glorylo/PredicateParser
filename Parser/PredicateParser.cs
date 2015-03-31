@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
    
   namespace SimpleExpression
@@ -138,10 +139,19 @@ using System.Text.RegularExpressions;
           private Expression ParseRelation()   { return ParseBinary(ParseUnary, "<", "<=", ">=", ">"); }
           private Expression ParseUnary()      { return CurrOpAndNext("!") != null ? _unOp["!"](ParseUnary())
                                                  : ParsePrimary(); }
+          
+          
+          // parsing single or nested identifiers. EBNF: ParseIdent = ident { "." ident } .
+          private Expression ParseNestedIdent()
+          {
+              Expression expr = ParameterMember(CurrOptNext);
+              while (CurrOpAndNext(".") != null && IsIdent) expr = Expression.PropertyOrField(expr, CurrOptNext);
+              return expr;
+          }
 
           private Expression ParseIdent()
           {
-              return !IsWhiteSpaceIdent ? ParameterMember(CurrOptNext)
+              return !IsWhiteSpaceIdent ? ParseNestedIdent()
                   : ParameterMember(Regex.Replace(
                     CurrOptNext, @"^\[(?:\s*)(.*?)(?:\s*)\]$", m => m.Groups[1].Value));
           }      

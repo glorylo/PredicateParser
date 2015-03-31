@@ -36,7 +36,7 @@ namespace Parser
             profile2.Location = "Burnaby";
 
             
-            var s = @"[Location == ""Vancouver""";
+            var s = @"Location == ""Vancouver""";
             try
             {
                  var pred = SimpleExpression.PredicateParser<IDictionary<string, object>>.Parse(s);
