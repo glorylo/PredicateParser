@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
-  using System.Linq.Expressions;
-using System.Reflection;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
    
   namespace SimpleExpression
@@ -104,55 +101,25 @@ using System.Text.RegularExpressions;
           private static ConstantExpression Const(object v) { return Expression.Constant(v); }
 
           /// <summary>create lambda parameter field or property access</summary>
-          private Expression ParameterMember<TData>( string s)
+          private Expression ParameterMember( string s)
           {
-
-              Expression e = null;
-/*
               var sourceType = typeof (TData);
-              if (sourceType.IsAssignableFrom(IDictionary<string,object>))
+              if (typeof(IDictionary<string,object>).IsAssignableFrom(sourceType))
               {
-*/
-                  //PropertyInfo indexer = _param.Type.GetProperty(s);
                   Expression key = Expression.Constant(s, typeof(string));
                   var result = Expression.Parameter(typeof(object), "result");
-
-
-                  BlockExpression block = Expression.Block(
+                  var block = Expression.Block(
                     new[] { result },               //make the result a variable in scope for the block           
                     Expression.Assign(result, Expression.Property(_param, "Item", key)),
                     result                          //last value Expression becomes the return of the block 
                   );
 
                   return block;
-/*
               }
-*/
-               //return Expression.PropertyOrField(_param, s);
+
+              return Expression.PropertyOrField(_param, s);
           }
 
-/*
-          private Expression AddMethod 
-          { get 
-             { var addMethod = typeof(ExpandoObject).GetMethod(
-                "Add", new[] { typeof(string), typeof(object) });
-             } 
-          }
-*/
-/*
-          private MemberExpression PropertyMember(object v, string s)
-          {
-              ParameterExpression valueBag = Expression.Parameter(typeof(Dictionary<string, object>), "valueBag");
-              ParameterExpression key = Expression.Parameter(typeof(string), "key");
-              ParameterExpression result = Expression.Parameter(typeof(object), "result");
-              BlockExpression block = Expression.Block(
-                new[] { result },               //make the result a variable in scope for the block           
-                Expression.Assign(result, Expression.Property(valueBag, "Item", key)),
-                result                          //last value Expression becomes the return of the block 
-              );
-
-          }
-*/
           /// <summary>create lambda expression</summary>
           private Expression<Func<TData, bool>> Lambda(Expression expr) { return Expression.Lambda<Func<TData, bool>>(expr, _param); }
           /// <summary>the lambda's parameter (all names are members of this)</summary>
@@ -171,7 +138,7 @@ using System.Text.RegularExpressions;
           private Expression ParseRelation()   { return ParseBinary(ParseUnary, "<", "<=", ">=", ">"); }
           private Expression ParseUnary()      { return CurrOpAndNext("!") != null ? _unOp["!"](ParseUnary())
                                                  : ParsePrimary(); }
-          private Expression ParseIdent()      { return ParameterMember<TData>(CurrOptNext); }
+          private Expression ParseIdent()      { return ParameterMember(CurrOptNext); }
           private Expression ParseString()     { return Const(Regex.Replace(CurrOptNext, "^\"(.*)\"$",
                                                  m => m.Groups[1].Value)); }
           private Expression ParseNumber()     { if (IsDouble) return Const(double.Parse(CurrOptNext));

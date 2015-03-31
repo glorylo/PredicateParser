@@ -25,15 +25,15 @@ namespace Parser
             var profile = new ExpandoObject() as IDictionary<string, object>;
             profile["Username"] = "Johny";
             profile["Age"] = 33;
-            profile["Location"] = "Burnaby";
+            profile["Location"] = "Vancouver";
             profile["Online Status"] = "Online Now";
 
 
-/*
-            var profile = new Profile();
-            profile.Age = 32;
-            profile.Location = "Burnaby";
-*/
+
+            var profile2 = new Profile();
+            profile2.Age = 32;
+            profile2.Location = "Burnaby";
+
 
             var s = @"Location == ""Vancouver""";
             var pred = SimpleExpression.PredicateParser<IDictionary<string, object>>.Parse(s);
@@ -42,6 +42,7 @@ namespace Parser
             Console.WriteLine("Expr Tree:  {0}", pred.ToString());
             var predicateCompiled = pred.Compile();
             var matchLocation = predicateCompiled(profile);
+            //var matchLocation = predicateCompiled(profile2);
             Console.WriteLine("Output of prediate: {0}", matchLocation);
             Console.ReadLine();
 
