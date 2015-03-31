@@ -5,6 +5,8 @@ using System.Linq.Expressions;
 using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
    
+
+  // 
   namespace SimpleExpression
   {
       public abstract class PredicateParser
@@ -12,21 +14,23 @@ using System.Text.RegularExpressions;
           #region scanner
 
           /// <summary>tokenizer pattern: Optional-SpaceS...Token...Optional-Spaces</summary>
-          private static readonly string _pattern = @"\s*(" + string.Join("|", new string[]
+          private static readonly string _pattern = @"\s*(" + string.Join("|", new []
           {
               // operators and punctuation that are longer than one char: longest first
-              string.Join("|", new string[] {"||", "&&", "==", "!=", "<=", ">="}.Select(e => Regex.Escape(e))),
+              string.Join("|", new [] { "StartsWith?", "EndsWith?", "Matching?" }.Select(Regex.Escape)), // reserved words                   
+              string.Join("|", new [] {"||", "&&", "==", "!=", "<=", ">="}.Select(Regex.Escape)),  // operators
               @"""(?:\\.|[^""])*""", // string
               @"\d+(?:\.\d+)?", // number with optional decimal part
               @"\w+", // word
               @"\[(?:\s*)((?:\w+\s*)+)(?:\s*)\]", // white space words in square brackets
-      @"\S", // other 1-char tokens (or eat up one character in case of an error)
-      }) + @")\s*";
+              @"\S", // other 1-char tokens (or eat up one character in case of an error)
+          }) + @")\s*";
+
           /// <summary>get 1st char of current token (or a Space if no 1st char is obtained)</summary>
           private char Ch { get { return string.IsNullOrEmpty(Curr) ? ' ' : Curr[0]; } }
           /// <summary>move one token ahead</summary><returns>true = moved ahead, false = end of stream</returns>
           private bool Move() { return _tokens.MoveNext(); }
-          /// <summary>the token stream implemented as IEnumerator&lt;string&gt;</summary>
+          /// <summary>the token stream implemwented as IEnumerator&lt;string&gt;</summary>
           private IEnumerator<string> _tokens;
           /// <summary>constructs the scanner for the given input string</summary>
           protected PredicateParser(string s)
@@ -39,7 +43,7 @@ using System.Text.RegularExpressions;
           protected bool IsDouble { get { return IsNumber && Curr.Contains('.'); } }
           protected bool IsString { get { return Ch == '"'; } }
           protected bool IsWhiteSpaceIdent { get { return Ch == '['; }}
-          protected bool IsIdent { get { char c = Ch; return IsWhiteSpaceIdent || char.IsLower(c) || char.IsUpper(c) || c == '_'; } }
+          protected bool IsIdent { get { char c = Ch; return char.IsLower(c) || char.IsUpper(c) || c == '_'; } }
           /// <summary>throw an argument exception</summary>
           protected void Abort(string msg) { throw new ArgumentException("Error: " + (msg ?? "unknown error")); }
           /// <summary>get the current item of the stream or an empty string after the end</summary>
@@ -117,7 +121,6 @@ using System.Text.RegularExpressions;
                   Expression.Assign(result, Expression.Property(_param, "Item", key)),
                   result                          //last value Expression becomes the return of the block 
                   );
-
               return block;
           }
 
@@ -139,8 +142,7 @@ using System.Text.RegularExpressions;
           private Expression ParseRelation()   { return ParseBinary(ParseUnary, "<", "<=", ">=", ">"); }
           private Expression ParseUnary()      { return CurrOpAndNext("!") != null ? _unOp["!"](ParseUnary())
                                                  : ParsePrimary(); }
-          
-          
+
           // parsing single or nested identifiers. EBNF: ParseIdent = ident { "." ident } .
           private Expression ParseNestedIdent()
           {
@@ -149,19 +151,19 @@ using System.Text.RegularExpressions;
               return expr;
           }
 
-          private Expression ParseIdent()
-          {
-              return !IsWhiteSpaceIdent ? ParseNestedIdent()
-                  : ParameterMember(Regex.Replace(
+          private Expression ParseWithSpaceIdent() {
+              return ParameterMember(Regex.Replace(
                     CurrOptNext, @"^\[(?:\s*)(.*?)(?:\s*)\]$", m => m.Groups[1].Value));
           }      
+
           private Expression ParseString()     { return Const(Regex.Replace(CurrOptNext, "^\"(.*)\"$",
                                                  m => m.Groups[1].Value)); }
           private Expression ParseNumber()     { if (IsDouble) return Const(double.Parse(CurrOptNext));
                                                  return Const(int.Parse(CurrOptNext)); }
           private Expression ParsePrimary()
           {
-              if (IsIdent) return ParseIdent();
+              if (IsIdent) return ParseNestedIdent();
+              if (IsWhiteSpaceIdent) return ParseWithSpaceIdent();
               if (IsString) return ParseString();
               if (IsNumber) return ParseNumber();
               return ParseNested();

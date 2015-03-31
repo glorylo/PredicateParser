@@ -27,22 +27,20 @@ namespace Parser
             profile["Username"] = "Johny";
             profile["Age"] = 33;
             profile["Location"] = "Vancouver";
-            profile["Online Status"] = "Online Now";
+            profile["Online Status"] = "Last Online";
 
+//
+//            var profile2 = new Profile();
+//            profile2.Age = 32;
+//            profile2.Location = "Burnaby";
 
-
-            var profile2 = new Profile();
-            profile2.Age = 32;
-            profile2.Location = "Burnaby";
-
-            
-            var s = @"Location == ""Vancouver""";
+            var s = @"Location == ""Vancouver"")";
             try
             {
                  var pred = SimpleExpression.PredicateParser<IDictionary<string, object>>.Parse(s);
                  //var pred = SimpleExpression.PredicateParser<Profile>.Parse(s);
                  Console.WriteLine("String: {0}", s);
-                 Console.WriteLine("Expr Tree:  {0}", pred.ToString());
+                 Console.WriteLine("Expr Tree:  {0}", pred);
                  var predicateCompiled = pred.Compile();
                  var matchLocation = predicateCompiled(profile);
                  //var matchLocation = predicateCompiled(profile2);
