@@ -42,7 +42,7 @@ using System.Text.RegularExpressions;
           #endregion
           #region scanner
 
-          protected static readonly string[] Operators = { "||", "&&", "==", "!=", "<=", ">="};
+          protected static readonly string[] Operators = { "||", "&&", "==", "!=", "<=", ">=", "+", "-", "/", "*"};
           /// <summary>tokenizer pattern: Optional-SpaceS...Token...Optional-Spaces</summary>
           private static readonly string _pattern = @"\s*(" + string.Join("|", new []
           {              
@@ -129,30 +129,42 @@ using System.Text.RegularExpressions;
               { "<=", (a,b)=>Expression.LessThanOrEqual(Coerce(a,b), Coerce(b,a)) },
               { ">=", (a,b)=>Expression.GreaterThanOrEqual(Coerce(a,b), Coerce(b,a)) },
               { ">", (a,b)=>Expression.GreaterThan(Coerce(a,b), Coerce(b,a)) },
+              { "+", (a,b)=>Expression.Add(Coerce(a,b), Coerce(b,a)) },
+              { "-", (a,b)=>Expression.Subtract(Coerce(a,b), Coerce(b,a)) },
+              { "*", (a,b)=>Expression.Multiply(Coerce(a,b), Coerce(b,a)) },
+              { "/", (a,b)=>Expression.Divide(Coerce(a,b), Coerce(b,a)) },
+              { "%", (a,b)=>Expression.Modulo(Coerce(a,b), Coerce(b,a)) },
               { "StartsWith?", (a,b)=> ReservedWordPredicate("StartsWith?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) },
               { "EndsWith?", (a,b)=> ReservedWordPredicate("EndsWith?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) },
               { "Containing?", (a,b)=> ReservedWordPredicate("Containing?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) },
               { "Matching?", (a,b)=> ReservedWordPredicate("Matching?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) },
           };
 
+          /// <summary>
+          /// Creates a expression for the reserved words:  StartsWith?, EndsWith?, etc.
+          /// </summary>
+          /// <param name="reservedWord">The reserved word</param>
+          /// <param name="lhs">The expression on the left hand side</param>
+          /// <param name="rhs">The expression on the right hand side</param>
+          /// <returns></returns>
           private static Expression ReservedWordPredicate(string reservedWord, Expression lhs, Expression rhs)
           {
               if (!ReservedWords.Contains(reservedWord))
                   Abort("unknown reserved word:  " + reservedWord);
 
-
               if (lhs.Type != typeof(string) || rhs.Type != typeof(string))
                   Abort("expecting string type for predicate");
 
               return _builtInReservedWords[reservedWord](lhs, new[] {rhs});
-
           }
 
           private static readonly Dictionary<string, Func<Expression, Expression>> _unOp =
               new Dictionary<string, Func<Expression, Expression>>()
           {
               { "!", a=>Expression.Not(Coerce(a, _bool)) },
+              { "-", Expression.Negate },
           };
+
           /// <summary>create a constant of a value</summary>
           private static ConstantExpression Const(object v) { return Expression.Constant(v); }
 
@@ -188,9 +200,16 @@ using System.Text.RegularExpressions;
           private Expression ParseAnd()          { return ParseBinary(ParseEquality, "&&"); }
           private Expression ParseEquality()     { return ParseBinary(ParseRelation, "==", "!="); }
           private Expression ParseRelation()     { return ParseBinary(ParseReservedWord, "<", "<=", ">=", ">"); }
-          private Expression ParseReservedWord() { return ParseBinary(ParseUnary, "StartsWith?", "EndsWith?", "Containing?", "Matching?"); }          
-          private Expression ParseUnary()        { return CurrOpAndNext("!") != null ? _unOp["!"](ParseUnary())
-                                                   : ParsePrimary(); }
+          private Expression ParseReservedWord() { return ParseBinary(ParseSum, "StartsWith?", "EndsWith?", "Containing?", "Matching?"); }
+          private Expression ParseSum()          { return ParseBinary(ParseMul, "+", "-"); }
+          private Expression ParseMul()          { return ParseBinary(ParseUnary, "/", "*", "%"); }          
+
+          private Expression ParseUnary()
+          {
+            if (CurrOpAndNext("!") != null) return _unOp["!"](ParseUnary());
+            if (CurrOpAndNext("-") != null) return _unOp["-"](ParseUnary());
+               return ParsePrimary();
+          }
 
           // parsing single or nested identifiers. EBNF: ParseIdent = ident { "." ident } .
           private Expression ParseNestedIdent()

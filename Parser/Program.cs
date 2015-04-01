@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Dynamic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Parser
 {
@@ -34,7 +28,8 @@ namespace Parser
 //            profile2.Age = 32;
 //            profile2.Location = "Burnaby";
 
-            var s = @"Location Matching? ""couver$"")";
+            //var s = @"Location Matching? ""couver$"")";
+            var s = @"10 / 2 >= 3 + 3";
             try
             {
                  var pred = SimpleExpression.PredicateParser<IDictionary<string, object>>.Parse(s);
