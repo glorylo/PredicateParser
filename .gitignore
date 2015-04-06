@@ -1,2 +1,3 @@
-Parser/bin/
-Parser/obj/Debug/
+PredicateParser/bin/
+PredicateParser/obj/Debug/
+*.v12.suo

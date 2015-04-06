@@ -29,7 +29,8 @@ namespace Parser
 //            profile2.Location = "Burnaby";
 
             //var s = @"Location Matching? ""couver$"")";
-            var s = @"10 / 2 >= 3 + 3";
+            //var s = @"10 / 2 >= 3 + 3";
+            var s = @"[Online Status] == ""Online Now"" || [Online Status] StartsWith? ""Last Online"")";
             try
             {
                  var pred = SimpleExpression.PredicateParser<IDictionary<string, object>>.Parse(s);
