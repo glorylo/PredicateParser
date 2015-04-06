@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -194,6 +195,7 @@ using System.Text.RegularExpressions;
           private PredicateParser(string s): base(s) { }
           /// <summary>main entry point</summary>
           public static Expression<Func<TData, bool>> Parse(string s) { return new PredicateParser<TData>(s).Parse(); }
+          public static bool TryParse(string s) { try { Parse(s); } catch (Exception e) { Trace.WriteLine("Parsing exception: \n" + e.StackTrace); return false; } return true; }
           private Expression<Func<TData, bool>> Parse() { return Lambda(ParseExpression()); }
           private Expression ParseExpression()   { return ParseOr(); }
           private Expression ParseOr()           { return ParseBinary(ParseAnd, "||"); }
