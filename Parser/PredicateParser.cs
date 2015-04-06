@@ -5,9 +5,21 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-   
 
-  // 
+// Forked version of PredicateParser originally by Andreas Gieriet
+// See this Article:  http://www.codeproject.com/Articles/355513/Invent-your-own-Dynamic-LINQ-parser
+// Added improvements:
+// - Access property fields via dynamic obj
+// - Added string built in predicates
+// - Added white space identifies support w/ square brackets
+//
+// Some Good TODOS / Enhancements: 
+// - Move this to a separate nuget package
+// - Make the parser customizable at run-time to add new predicates
+// - Support multi arguments for predicates via function calls
+//
+// Glory Lo
+  
   namespace SimpleExpression
   {
       public abstract class PredicateParser
