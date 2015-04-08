@@ -21,7 +21,7 @@ namespace Parser
             profile["Username"] = "Johny";
             profile["Age"] = 33;
             profile["Location"] = "Vancouver";
-            profile["Online Status"] = "Last Online";
+            profile["Online Status"] = "Online Now";
 
 //
 //            var profile2 = new Profile();
@@ -30,7 +30,7 @@ namespace Parser
 
             //var s = @"Location Matching? ""couver$"")";
             //var s = @"10 / 2 >= 3 + 3";
-            var s = @"[Online Status] == ""Online Now"" || [Online Status] StartsWith? ""Last Online"")";
+            var s = @"[Online Status] EndsWith? ""Now"" || [Online Status] StartsWith? ""Last Online"")";
             try
             {
                  var pred = SimpleExpression.PredicateParser<IDictionary<string, object>>.Parse(s);

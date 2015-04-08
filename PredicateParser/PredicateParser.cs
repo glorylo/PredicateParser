@@ -27,7 +27,7 @@ using System.Text.RegularExpressions;
 
           #region built-in reserved words
 
-          protected static readonly string[] ReservedWords = {"StartsWith?", "EndsWith?", "Containing?", "Matching?"};
+          protected static readonly string[] ReservedWords = {"StartsWith?", "EndsWith?", "Containing?", "Matching?", "Equals?"};
 
           protected static MethodInfo GetMethodInfo(string name, Type[] types) { return typeof(string).GetMethod(name, types); }
 
@@ -49,7 +49,8 @@ using System.Text.RegularExpressions;
                                  Expression.PropertyOrField(result, "Success")                         
                     );
                     return block;                  
-                }}
+                }},
+              { "Equals?", (instance, args) => Expression.Call(instance, GetMethodInfo("Equals" , new [] { typeof(string)}), args) },
           }; 
 
           #endregion
@@ -151,6 +152,7 @@ using System.Text.RegularExpressions;
               { "EndsWith?", (a,b)=> ReservedWordPredicate("EndsWith?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) },
               { "Containing?", (a,b)=> ReservedWordPredicate("Containing?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) },
               { "Matching?", (a,b)=> ReservedWordPredicate("Matching?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) },
+              { "Equals?", (a,b)=> ReservedWordPredicate("Equals?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) }
           };
 
           /// <summary>
@@ -188,13 +190,7 @@ using System.Text.RegularExpressions;
                   return Expression.PropertyOrField(_param, s);
 
               Expression key = Expression.Constant(s, typeof(string));
-              var result = Expression.Parameter(typeof(object), "result");
-              var block = Expression.Block(
-                  new[] { result },               //make the result a variable in scope for the block           
-                  Expression.Assign(result, Expression.Property(_param, "Item", key)),
-                  result                          //last value Expression becomes the return of the block 
-                  );
-              return block;
+              return Expression.Property(_param, "Item", key);
           }
 
           /// <summary>create lambda expression</summary>
@@ -214,7 +210,7 @@ using System.Text.RegularExpressions;
           private Expression ParseAnd()          { return ParseBinary(ParseEquality, "&&"); }
           private Expression ParseEquality()     { return ParseBinary(ParseRelation, "==", "!="); }
           private Expression ParseRelation()     { return ParseBinary(ParseReservedWord, "<", "<=", ">=", ">"); }
-          private Expression ParseReservedWord() { return ParseBinary(ParseSum, "StartsWith?", "EndsWith?", "Containing?", "Matching?"); }
+          private Expression ParseReservedWord() { return ParseBinary(ParseSum, "StartsWith?", "EndsWith?", "Containing?", "Matching?", "Equals?"); }
           private Expression ParseSum()          { return ParseBinary(ParseMul, "+", "-"); }
           private Expression ParseMul()          { return ParseBinary(ParseUnary, "/", "*", "%"); }          
 
