@@ -5,6 +5,13 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PredicateParser", "PredicateParser\PredicateParser.csproj", "{4038BE7E-E9FA-4A09-ABDA-2067627CFBB8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PredicateParser.Tests", "Tests\PredicateParser.Tests.csproj", "{7CAC1124-0663-4A10-9F13-82A4D37B113B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8D592A5C-2D74-4A7D-AE3A-178C0F118390}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +22,10 @@ Global
 		{4038BE7E-E9FA-4A09-ABDA-2067627CFBB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4038BE7E-E9FA-4A09-ABDA-2067627CFBB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4038BE7E-E9FA-4A09-ABDA-2067627CFBB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CAC1124-0663-4A10-9F13-82A4D37B113B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CAC1124-0663-4A10-9F13-82A4D37B113B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CAC1124-0663-4A10-9F13-82A4D37B113B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CAC1124-0663-4A10-9F13-82A4D37B113B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
