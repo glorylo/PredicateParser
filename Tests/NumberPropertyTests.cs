@@ -16,7 +16,7 @@ namespace Tests
         [SetUp]
         public void BeforeTest()
         {
-            Subject = new Person { FirstName = "John", LastName = "Smith", Age = 60, Salary = 2300.50, PostalCode = "V5H 0A7" };
+            Subject = new Person { FirstName = "John", LastName = "Smith", Age = 60, Salary = 2300.50, PostalCode = "V5H0A7" };
         }
 
         [Test]
@@ -52,6 +52,13 @@ namespace Tests
         {
             var expr = @"Age > 50 && Age < 70";
             Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyIntOutOfRangeProperty()
+        {
+            var expr = @"Age > 60 || Age < 60";
+            Assert.IsFalse(EvalulateExpression(expr));
         }
 
 

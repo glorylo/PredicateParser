@@ -19,7 +19,7 @@ namespace Tests
         [SetUp]
         public void BeforeTest()
         {
-            Subject = new Person { FirstName = "John", LastName = "Smith", Age = 60, Salary = 2300.50, PostalCode = "V5H 0A7"};
+            Subject = new Person { FirstName = "John", LastName = "Smith", Age = 60, Salary = 2300.50, PostalCode = "V5H0A7"};
         }
 
         [Test]
@@ -93,12 +93,39 @@ namespace Tests
             Assert.IsTrue(EvalulateExpression(expr));
         }
 
-
         [Test]
         public void VerifyPropertyNotEndsWith()
         {
             var expr = @"Lastname EndsWith? ""math""";
             Assert.IsFalse(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyPropertyMatching()
+        {
+            var expr = @"PostalCode Matching? ""[A-Z]\d[A-Z]\d[A-Z]\d""";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyPropertyNotMatching()
+        {
+            var expr = @"PostalCode Matching? ""[a-z]\d[a-z]\d[a-z]\d""";
+            Assert.IsFalse(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyAndStringPropertyCondition()
+        {
+            var expr = @"Firstname == ""John"" && Lastname EndsWith? ""mith""";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyOrStringPropertyCondition()
+        {
+            var expr = @"Firstname == ""Joey"" || Lastname == ""Smith""";
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
 
