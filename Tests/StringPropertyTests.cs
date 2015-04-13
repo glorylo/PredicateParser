@@ -5,32 +5,21 @@ using PredicateParser;
 
 namespace Tests
 {
-
-    public class Person
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public int Age { get; set; }
-        public double Salary { get; set; }
-    }
-
     [TestFixture]
-    public class PropertyFieldTests
+    public class StringPropertyTests
     {
         public Person Subject  { get; set; }
 
         private bool EvalulateExpression(string expression)
         {
-            var predicate = PredicateParser<Person>.Parse(expression);
-            var compiledPredicate = predicate.Compile();
-            Trace.WriteLine(compiledPredicate);
-            return compiledPredicate(Subject);
+            Subject.Inspect();
+            return ExpressionEvaluator.Evaluate(expression, Subject);
         }
 
         [SetUp]
         public void BeforeTest()
         {
-            Subject = new Person { FirstName = "John", LastName = "Smith", Age = 60, Salary = 2300.50 };
+            Subject = new Person { FirstName = "John", LastName = "Smith", Age = 60, Salary = 2300.50, PostalCode = "V5H 0A7"};
         }
 
         [Test]
@@ -41,6 +30,7 @@ namespace Tests
             Assert.IsTrue(parsedCorrectly);
         }
 
+        #region String Property
         [Test]
         public void VerifyPropertyEquals()
         {
@@ -69,33 +59,8 @@ namespace Tests
             Assert.IsFalse(EvalulateExpression(expr));
         }
 
-        [Test]
-        public void VerifyIntEqualsProperty()
-        {
-            var expr = @"Age == 60";
-            Assert.IsTrue(EvalulateExpression(expr));
-        }
+        #endregion
 
-        [Test]
-        public void VerifyGreaterOrEqualsProperty()
-        {
-            var expr = @"Age >= 60";
-            Assert.IsTrue(EvalulateExpression(expr));
-        }
-
-        [Test]
-        public void VerifyLessThanProperty()
-        {
-            var expr = @"Age < 60";
-            Assert.IsFalse(EvalulateExpression(expr));
-        }
-
-        [Test]
-        public void VerifyLessThanEqualsProperty()
-        {
-            var expr = @"Age <= 60";
-            Assert.IsTrue(EvalulateExpression(expr));
-        }    
 
     }
 }
