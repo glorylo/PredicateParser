@@ -3,7 +3,7 @@
 namespace Tests
 {
     [TestFixture]
-    public class IntPropertyTest
+    public class NumberPropertyTests
     {
         public Person Subject { get; set; }
 

@@ -30,7 +30,6 @@ namespace Tests
             Assert.IsTrue(parsedCorrectly);
         }
 
-        #region String Property
         [Test]
         public void VerifyPropertyEquals()
         {
@@ -59,7 +58,48 @@ namespace Tests
             Assert.IsFalse(EvalulateExpression(expr));
         }
 
-        #endregion
+        [Test]
+        public void VerifyPropertyStartsWith()
+        {
+            var expr = @"Firstname StartsWith? ""Jo""";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyPropertyNotStartsWith()
+        {
+            var expr = @"Firstname StartsWith? ""Jot""";
+            Assert.IsFalse(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyPropertyContains()
+        {
+            var expr = @"Firstname Containing? ""oh""";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyPropertyNotContains()
+        {
+            var expr = @"Lastname Containing? ""at""";
+            Assert.IsFalse(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyPropertyEndsWith()
+        {
+            var expr = @"Lastname EndsWith? ""mith""";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+
+        [Test]
+        public void VerifyPropertyNotEndsWith()
+        {
+            var expr = @"Lastname EndsWith? ""math""";
+            Assert.IsFalse(EvalulateExpression(expr));
+        }
 
 
     }

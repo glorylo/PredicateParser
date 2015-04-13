@@ -51,7 +51,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ExpressionEvaluator.cs" />
-    <Compile Include="IntPropertyTest.cs" />
+    <Compile Include="NumberPropertyTests.cs" />
     <Compile Include="Person.cs" />
     <Compile Include="StringPropertyTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
