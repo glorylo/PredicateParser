@@ -50,6 +50,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="DynamicObjectTests.cs" />
     <Compile Include="ExpressionEvaluator.cs" />
     <Compile Include="NumberPropertyTests.cs" />
     <Compile Include="Person.cs" />

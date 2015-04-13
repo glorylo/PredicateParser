@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace Tests
 {
@@ -27,6 +28,13 @@ namespace Tests
         }
 
         [Test]
+        public void VerifyIntNotEqualsProperty()
+        {
+            var expr = @"Age != 50";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
         public void VerifyIntGreaterOrEqualsProperty()
         {
             var expr = @"Age >= 60";
@@ -37,7 +45,8 @@ namespace Tests
         public void VerifyIntLessThanProperty()
         {
             var expr = @"Age < 60";
-            Assert.IsFalse(EvalulateExpression(expr));
+            Subject.Age = 50;
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
@@ -55,12 +64,87 @@ namespace Tests
         }
 
         [Test]
-        public void VerifyIntOutOfRangeProperty()
+        public void VerifyIntOutOfRangeUpperBoundProperty()
         {
             var expr = @"Age > 60 || Age < 60";
-            Assert.IsFalse(EvalulateExpression(expr));
+            Subject.Age = 61;
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
+        [Test]
+        public void VerifyIntOutOfRangeLowerBoundProperty()
+        {
+            var expr = @"Age > 60 || Age < 60";
+            Subject.Age = 59;
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyRealNumberEquals()
+        {
+            var expr = @"Salary == 2300.50";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyRealNumberNotEquals()
+        {
+            var expr = @"Salary != 2200.50";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyRealNumberGreaterThan()
+        {
+            var expr = @"Salary > 2200";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyRealNumberGreaterThanEquals()
+        {
+            var expr = @"Salary >= 1200";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyRealNumberLessThan()
+        {
+            var expr = @"Salary < 2300.51";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyRealNumberLessThanEquals()
+        {
+            var expr = @"Salary <= 2300.50";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyRealBetweenProperty()
+        {
+            var expr = @"Salary > 2000 && Salary < 3000";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyRealOutOfRangeUpperBoundProperty()
+        {
+            var expr = @"Salary > 2300.60 || Salary < 2000";
+            Subject.Salary = 2300.61;
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        public void VerifyRealOutOfRangeLowerBoundProperty()
+        {
+            var expr = @"Salary > 2300.60 || Salary < 2000";
+            Subject.Salary = 1999.99;
+            Assert.IsTrue(EvalulateExpression(expr));
+            
+        }
 
     }
+
+
 }
