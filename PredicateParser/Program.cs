@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 
-namespace Parser
+namespace PredicateParser
 {
     class Profile
     {
@@ -33,7 +33,7 @@ namespace Parser
             var s = @"[Online Status] EndsWith? ""Now"" || [Online Status] StartsWith? ""Last Online"")";
             try
             {
-                 var pred = SimpleExpression.PredicateParser<IDictionary<string, object>>.Parse(s);
+                 var pred = PredicateParser<IDictionary<string, object>>.Parse(s);
                  //var pred = SimpleExpression.PredicateParser<Profile>.Parse(s);
                  Console.WriteLine("String: {0}", s);
                  Console.WriteLine("Expr Tree:  {0}", pred);

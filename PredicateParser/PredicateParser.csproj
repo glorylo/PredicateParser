@@ -7,8 +7,8 @@
     <ProjectGuid>{4038BE7E-E9FA-4A09-ABDA-2067627CFBB8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Parser</RootNamespace>
-    <AssemblyName>Parser</AssemblyName>
+    <RootNamespace>PredicateParser</RootNamespace>
+    <AssemblyName>PredicateParser</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
