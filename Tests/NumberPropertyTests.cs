@@ -136,6 +136,7 @@ namespace Tests
             Assert.IsTrue(EvalulateExpression(expr));
         }
 
+        [Test]
         public void VerifyRealOutOfRangeLowerBoundProperty()
         {
             var expr = @"Salary > 2300.60 || Salary < 2000";
@@ -144,7 +145,49 @@ namespace Tests
             
         }
 
-    }
+        [Test]
+        public void VerifyAdditionProperty()
+        {
+            var expr = @"Salary + 1050 == 3350.50";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifySubtractionProperty()
+        {
+            var expr = @"Salary - 1000 == 1300.50";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyMultiplyProperty()
+        {
+            var expr = @"Salary * 3.5  == 8051.75";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyDivProperty()
+        {
+            var expr = @"Salary /2  == 1150.25";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyModProperty()
+        {
+            var expr = @"Salary % 2  == 0.5";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyNestedMathOnProperty()
+        {
+            var expr = @"(Salary + (20  * 3))  / 2 == 1180.25";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+    } 
 
 
 }
