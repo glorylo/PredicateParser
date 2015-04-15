@@ -99,48 +99,42 @@ namespace Tests
         public void VerifyLessThanCondition()
         {
             var expr = @"Price < 40";
-            dynamic p = Product;
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
         [Test]
         public void VerifyLessThanOrEqualCondition()
         {
             var expr = @"Price <= 34.99";
-            dynamic p = Product;
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
         [Test]
         public void VerifyGreaterThanCondition()
         {
             var expr = @"Price > 33.99";
-            dynamic p = Product;
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
         [Test]
         public void VerifyGreaterThanOrEqualCondition()
         {
             var expr = @"Price >= 34.99";
-            dynamic p = Product;
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
         [Test]
         public void VerifyOrCondition()
         {
             var expr = @"Price == 44.99 || Quantity > 20";
-            dynamic p = Product;
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
         [Test]
         public void VerifyAndCondition()
         {
             var expr = @"Price < 50.00 && Quantity >= 30";
-            dynamic p = Product;
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
 

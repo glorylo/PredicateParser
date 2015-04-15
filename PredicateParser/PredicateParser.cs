@@ -102,32 +102,7 @@ namespace PredicateParser
       {
           #region code generator          
           private static readonly Type _bool = typeof(bool);
-          private static readonly Type[] _prom = 
-          { typeof(decimal), typeof(double), typeof(float), typeof(ulong), typeof(long), typeof(uint),
-            typeof(int), typeof(ushort), typeof(char), typeof(short), typeof(byte), typeof(sbyte) };
-          /// <summary>enforce the type on the expression (by a cast) if not already of that type</summary>
-          private static Expression Coerce(Expression expr, Type type)
-          {
-              return expr.Type == type ? expr : Expression.Convert(expr, type);
-          }
-          /// <summary>casts if needed the expr to the "largest" type of both arguments</summary>
-          private static Expression Coerce(Expression expr, Expression sibling)
-          {
-              if (expr.Type != sibling.Type)
-              {                  
-                  Type maxType = MaxType(expr.Type, sibling.Type);
-                  if (maxType != expr.Type) expr = Expression.Convert(expr, maxType);
-              }
-              return expr;
-          }
-
-          /// <summary>returns the first if both are same, or the largest type of both (or the first)</summary>
-          private static Type MaxType(Type a, Type b)
-          {
-              if (a.IsDynamic() || b.IsDynamic())
-                  return typeof (object);
-              return a==b?a:(_prom.FirstOrDefault(t=>t==a||t==b)??a);
-          }
+          private static readonly Type _string = typeof(string);
 
           private static Expression CompareTo(ExpressionType expressionType, Expression compare)
           {
@@ -170,8 +145,8 @@ namespace PredicateParser
           //private static Expression CompareToExpression(Expression lhs, Expression rhs, Func<Expression, Expression> rel)
           private static Expression CompareToExpression(Expression lhs, Expression rhs, ExpressionType expressionType)
           {
-              lhs = Coerce(lhs, rhs);
-              rhs = Coerce(rhs, lhs);
+              lhs = ExpressionHelper.Coerce(lhs, rhs);
+              rhs = ExpressionHelper.Coerce(rhs, lhs);
 
               if (lhs.Type.IsDynamic() || rhs.Type.IsDynamic())
                   return DynamicOp.BinaryOpPredicate(lhs, rhs, expressionType);
@@ -184,30 +159,68 @@ namespace PredicateParser
               return CompareTo(expressionType, compare);
           }
 
+
+          private static Expression MathExpression(Expression lhs, Expression rhs, ExpressionType expressionType)
+          {
+              if (lhs.Type.IsDynamic() || rhs.Type.IsDynamic())
+                  DynamicOp.BinaryOp(lhs, rhs, expressionType);
+
+              var coerceLeft = ExpressionHelper.Coerce(lhs, rhs);
+              var coerceRight = ExpressionHelper.Coerce(rhs, lhs);
+
+              Expression exp = null;
+              switch (expressionType)
+              {
+                  case ExpressionType.Add:
+                      exp = Expression.Add(coerceLeft, coerceRight);
+                      break;
+
+                  case ExpressionType.Subtract:
+                      exp = Expression.Subtract(coerceLeft, coerceRight);
+                      break;
+
+                  case ExpressionType.Multiply:
+                      exp = Expression.Multiply(coerceLeft, coerceRight);
+                      break;
+
+                  case ExpressionType.Divide:
+                      exp = Expression.Divide(coerceLeft, coerceRight);
+                      break;
+
+                  case ExpressionType.Modulo:
+                      exp = Expression.Modulo(coerceLeft, coerceRight);
+                      break;
+                  default:
+                      Abort("unknown math type:  " + expressionType);
+                      break;
+              }
+              return exp;
+          }
+
           /// <summary>
           /// Code generation of binary and unary epressions, utilizing type coercion where needed
           /// </summary>
           private static readonly Dictionary<string, Func<Expression, Expression, Expression>> _binOp =
               new Dictionary<string,Func<Expression,Expression,Expression>>()
           {
-              { "||", (a,b)=>Expression.OrElse(Coerce(a, _bool), Coerce(b, _bool)) },
-              { "&&", (a,b)=>Expression.AndAlso(Coerce(a, _bool), Coerce(b, _bool)) },
+              { "||", (a,b)=>Expression.OrElse(ExpressionHelper.Coerce(a, _bool), ExpressionHelper.Coerce(b, _bool)) },
+              { "&&", (a,b)=>Expression.AndAlso(ExpressionHelper.Coerce(a, _bool), ExpressionHelper.Coerce(b, _bool)) },
               { "==", (a,b)=>CompareToExpression(a, b, ExpressionType.Equal) },
               { "!=", (a,b)=>CompareToExpression(a, b, ExpressionType.NotEqual) },
               { "<",  (a,b)=>CompareToExpression(a, b, ExpressionType.LessThan) },
               { "<=", (a,b)=>CompareToExpression(a, b, ExpressionType.LessThanOrEqual) },
               { ">=", (a,b)=>CompareToExpression(a, b, ExpressionType.GreaterThanOrEqual) },
               { ">",  (a,b)=>CompareToExpression(a, b, ExpressionType.GreaterThan) },
-              { "+", (a,b)=>Expression.Add(Coerce(a,b), Coerce(b,a)) },
-              { "-", (a,b)=>Expression.Subtract(Coerce(a,b), Coerce(b,a)) },
-              { "*", (a,b)=>Expression.Multiply(Coerce(a,b), Coerce(b,a)) },
-              { "/", (a,b)=>Expression.Divide(Coerce(a,b), Coerce(b,a)) },
-              { "%", (a,b)=>Expression.Modulo(Coerce(a,b), Coerce(b,a)) },
-              { "StartsWith?", (a,b)=> ReservedWordPredicate("StartsWith?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) },
-              { "EndsWith?", (a,b)=> ReservedWordPredicate("EndsWith?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) },
-              { "Containing?", (a,b)=> ReservedWordPredicate("Containing?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) },
-              { "Matching?", (a,b)=> ReservedWordPredicate("Matching?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) },
-              { "Equals?", (a,b)=> ReservedWordPredicate("Equals?", Coerce(a,typeof(string)), Coerce(b,typeof(string))) }
+              { "+",  (a,b)=>MathExpression(a,b, ExpressionType.Add) },
+              { "-",  (a,b)=>MathExpression(a,b, ExpressionType.Subtract) },
+              { "*",  (a,b)=>MathExpression(a,b, ExpressionType.Multiply) },
+              { "/",  (a,b)=>MathExpression(a,b, ExpressionType.Divide) },
+              { "%",  (a,b)=>MathExpression(a,b, ExpressionType.Modulo) },
+              { "StartsWith?", (a,b)=> ReservedWordPredicate("StartsWith?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
+              { "EndsWith?", (a,b)=> ReservedWordPredicate("EndsWith?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
+              { "Containing?", (a,b)=> ReservedWordPredicate("Containing?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
+              { "Matching?", (a,b)=> ReservedWordPredicate("Matching?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
+              { "Equals?", (a,b)=> ReservedWordPredicate("Equals?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) }
           };
 
           /// <summary>
@@ -231,7 +244,7 @@ namespace PredicateParser
           private static readonly Dictionary<string, Func<Expression, Expression>> _unOp =
               new Dictionary<string, Func<Expression, Expression>>()
           {
-              { "!", a=>Expression.Not(Coerce(a, _bool)) },
+              { "!", a=>Expression.Not(ExpressionHelper.Coerce(a, _bool)) },
               { "-", Expression.Negate },
           };
 
@@ -316,6 +329,7 @@ namespace PredicateParser
               if (IsNumber) return ParseNumber();
               return ParseNested();
           }
+          
           private Expression ParseNested()
           {
               if (CurrAndNext != "(") Abort("(...) expected");
@@ -323,6 +337,7 @@ namespace PredicateParser
               if (CurrOptNext != ")") Abort("')' expected");
               return expr;
           }
+          
           /// <summary>generic parsing of binary expressions</summary>
           private Expression ParseBinary(Func<Expression> parse, params string[] ops)
           {
