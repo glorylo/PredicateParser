@@ -103,5 +103,46 @@ namespace Tests
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
         }
 
+        [Test]
+        public void VerifyLessThanOrEqualCondition()
+        {
+            var expr = @"Price <= 34.99";
+            dynamic p = Product;
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
+        }
+
+        [Test]
+        public void VerifyGreaterThanCondition()
+        {
+            var expr = @"Price > 33.99";
+            dynamic p = Product;
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
+        }
+
+        [Test]
+        public void VerifyGreaterThanOrEqualCondition()
+        {
+            var expr = @"Price >= 34.99";
+            dynamic p = Product;
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
+        }
+
+        [Test]
+        public void VerifyOrCondition()
+        {
+            var expr = @"Price == 44.99 || Quantity > 20";
+            dynamic p = Product;
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
+        }
+
+        [Test]
+        public void VerifyAndCondition()
+        {
+            var expr = @"Price < 50.00 && Quantity >= 30";
+            dynamic p = Product;
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, p));
+        }
+
+
     }
 }
