@@ -103,6 +103,7 @@ namespace PredicateParser
           #region code generator          
           private static readonly Type _bool = typeof(bool);
           private static readonly Type _string = typeof(string);
+          private static readonly Type _object = typeof (object);
 
           private static Expression CompareTo(ExpressionType expressionType, Expression compare)
           {
@@ -143,20 +144,19 @@ namespace PredicateParser
 
           /// <summary>produce comparison based on IComparable types</summary>
           //private static Expression CompareToExpression(Expression lhs, Expression rhs, Func<Expression, Expression> rel)
-          private static Expression CompareToExpression(Expression lhs, Expression rhs, ExpressionType expressionType)
+          private static Expression CompareToExpression(Expression lhs, Expression rhs, ExpressionType exprType)
           {
+              if (lhs.Type.IsDynamic() || rhs.Type.IsDynamic())
+                  return DynamicOp.BinaryOpPredicate(ExpressionHelper.Coerce(lhs, _object), ExpressionHelper.Coerce(rhs, _object), exprType);
+
               lhs = ExpressionHelper.Coerce(lhs, rhs);
               rhs = ExpressionHelper.Coerce(rhs, lhs);
-
-              if (lhs.Type.IsDynamic() || rhs.Type.IsDynamic())
-                  return DynamicOp.BinaryOpPredicate(lhs, rhs, expressionType);
-
               var compareToMethod = lhs.Type.GetMethod("CompareTo", new[] {rhs.Type})
                                     ?? lhs.Type.GetMethod("CompareTo", new[] {typeof (object)});
               if (compareToMethod == null)
                   Abort("unexpected IComparable types for instance: " + lhs.Type + " compared to " + rhs.Type);
               Expression compare = Expression.Call(lhs, compareToMethod, new []{ rhs });
-              return CompareTo(expressionType, compare);
+              return CompareTo(exprType, compare);
           }
 
 

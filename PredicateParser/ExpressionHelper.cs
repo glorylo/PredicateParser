@@ -31,9 +31,10 @@ namespace PredicateParser
         /// <summary>returns the first if both are same, or the largest type of both (or the first)</summary>
         public static Type MaxType(Type a, Type b)
         {
-            if (a.IsDynamic() || b.IsDynamic())
-                return typeof(object);
             return a == b ? a : (_prom.FirstOrDefault(t => t == a || t == b) ?? a);
         }
+
+
+
     }
 }
