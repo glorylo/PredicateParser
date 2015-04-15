@@ -162,11 +162,11 @@ namespace PredicateParser
 
           private static Expression MathExpression(Expression lhs, Expression rhs, ExpressionType expressionType)
           {
-              if (lhs.Type.IsDynamic() || rhs.Type.IsDynamic())
-                  DynamicOp.BinaryOp(lhs, rhs, expressionType);
-
               var coerceLeft = ExpressionHelper.Coerce(lhs, rhs);
               var coerceRight = ExpressionHelper.Coerce(rhs, lhs);
+
+              if (lhs.Type.IsDynamic() || rhs.Type.IsDynamic())
+                  DynamicOp.BinaryOp(coerceLeft, coerceRight, expressionType);
 
               Expression exp = null;
               switch (expressionType)

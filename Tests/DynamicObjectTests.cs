@@ -137,6 +137,41 @@ namespace Tests
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
+        [Test]
+        public void VerifyAddCondition()
+        {
+            var expr = @"Quantity + 10 == 40";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifySubtractCondition()
+        {
+            var expr = @"Quantity - 10 == 20";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyMultiplyCondition()
+        {
+            var expr = @"Quantity * 5 == 150";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyDivCondition()
+        {
+            var expr = @"Quantity /2 == 15";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyModCondition()
+        {
+            var expr = @"Quantity % 5 == 0";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
 
     }
 }
