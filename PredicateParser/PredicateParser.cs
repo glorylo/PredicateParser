@@ -129,23 +129,6 @@ namespace PredicateParser
               return a==b?a:(_prom.FirstOrDefault(t=>t==a||t==b)??a);
           }
 
-          private static Expression DynamicBinaryOp(Expression lhs, Expression rhs, ExpressionType expressionType)
-          {
-              var expArgs = new List<Expression>() { lhs, rhs };
-              var binderM = Binder.BinaryOperation(CSharpBinderFlags.None, expressionType, lhs.Type, new CSharpArgumentInfo[]
-		            {
-			            CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null),
-			            CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)
-		            });
-
-              return Expression.Dynamic(binderM, typeof(object), expArgs);
-          }
-
-          private static Expression DynamicBinaryOpPredicate(Expression lhs, Expression rhs, ExpressionType expressionType)
-          {
-              return Expression.Convert(DynamicBinaryOp(lhs, rhs, expressionType), typeof(bool));              
-          }
-
           private static Expression CompareTo(ExpressionType expressionType, Expression compare)
           {
               Expression zero = Expression.Constant(0);
@@ -191,7 +174,7 @@ namespace PredicateParser
               rhs = Coerce(rhs, lhs);
 
               if (lhs.Type.IsDynamic() || rhs.Type.IsDynamic())
-                  return DynamicBinaryOpPredicate(lhs, rhs, expressionType);
+                  return DynamicOp.BinaryOpPredicate(lhs, rhs, expressionType);
 
               var compareToMethod = lhs.Type.GetMethod("CompareTo", new[] {rhs.Type})
                                     ?? lhs.Type.GetMethod("CompareTo", new[] {typeof (object)});

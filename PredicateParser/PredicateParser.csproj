@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DynamicOp.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="PredicateParser.cs" />
     <Compile Include="Program.cs" />

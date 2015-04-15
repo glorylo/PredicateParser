@@ -75,9 +75,23 @@ namespace Tests
         }
 
         [Test]
-        public void VerifyGetProperty()
+        public void VerifyIntPropertyEquals()
         {
             var expr = @"Price == 34.99";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyIntPropertyNotEquals()
+        {
+            var expr = @"Price != 35.99";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyNegateIntPropertyEquals()
+        {
+            var expr = @"!(Price == 30.99)";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
