@@ -23,7 +23,7 @@ namespace Tests
         }
 
         [Test]
-        public void VerifyWhiteSpaceEqualsIdentifer()
+        public void VerifyIndexerEquals()
         {
             var expr = @"[Inventory Status] == ""In Stock""";
             var product = Product as IDictionary<string, object>;
@@ -31,7 +31,7 @@ namespace Tests
         }
 
         [Test]
-        public void VerifyWhiteSpaceNotEqualsIdentifer()
+        public void VerifyIndexerNotEquals()
         {
             var expr = @"[Inventory Status] != ""Available""";
             var product = Product as IDictionary<string, object>;
@@ -39,7 +39,7 @@ namespace Tests
         }
         
         [Test]
-        public void VerifyWithEqualsReservedWord()
+        public void VerifyIndexerWithEqualsReservedWord()
         {
             var expr = @"[Inventory Status] Equals? ""In Stock""";
             var product = Product as IDictionary<string, object>;
@@ -47,28 +47,28 @@ namespace Tests
         }
 
         [Test]
-        public void VerifyContainingReservedWord()
+        public void VerifyIndexerContainingReservedWord()
         {
             var expr = @"Description Containing? ""best widget""";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
         [Test]
-        public void VerifyNotContainingReservedWord()
+        public void VerifyIndexerNotContainingReservedWord()
         {
             var expr = @"!(Description Containing? ""test"")";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
         [Test]
-        public void VerifyStartsWithReservedWord()
+        public void VerifyIndexerStartsWithReservedWord()
         {
             var expr = @"Description StartsWith? ""The best""";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
         [Test]
-        public void VerifyNotStartsWithReservedWord()
+        public void VerifyIndexerNotStartsWithReservedWord()
         {
             var expr = @"!(Description StartsWith? ""The test"")";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
