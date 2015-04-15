@@ -101,6 +101,7 @@ namespace PredicateParser
       public class PredicateParser<TData>: PredicateParser
       {
           #region code generator
+          private static readonly Expression _zero = Expression.Constant(0);
           private static readonly Type _bool = typeof(bool);
           private static readonly Type[] _prom = 
           { typeof(decimal), typeof(double), typeof(float), typeof(ulong), typeof(long), typeof(uint),
@@ -128,6 +129,20 @@ namespace PredicateParser
                   return typeof (object);
               return a==b?a:(_prom.FirstOrDefault(t=>t==a||t==b)??a);
           }
+
+          /// <summary>produce comparison based on IComparable types</summary>
+          private static Expression CompareToExpression(Expression lhs, Expression rhs, Func<Expression, Expression> rel)
+          {
+              lhs = Coerce(lhs, rhs);
+              rhs = Coerce(rhs, lhs);
+              var compareToMethod = lhs.Type.GetMethod("CompareTo", new[] {rhs.Type})
+                                    ?? lhs.Type.GetMethod("CompareTo", new[] {typeof (object)});
+              if (compareToMethod == null)
+                  Abort("Unexpected IComparable types for instance: " + lhs.Type + " compared to " + rhs.Type);
+              Expression cmp = Expression.Call(lhs, compareToMethod, new []{ rhs });
+              return rel(cmp);
+          }
+
           /// <summary>
           /// Code generation of binary and unary epressions, utilizing type coercion where needed
           /// </summary>
@@ -136,12 +151,20 @@ namespace PredicateParser
           {
               { "||", (a,b)=>Expression.OrElse(Coerce(a, _bool), Coerce(b, _bool)) },
               { "&&", (a,b)=>Expression.AndAlso(Coerce(a, _bool), Coerce(b, _bool)) },
+/*
               { "==", (a,b)=>Expression.Equal(Coerce(a,b), Coerce(b,a)) },
               { "!=", (a,b)=>Expression.NotEqual(Coerce(a,b), Coerce(b,a)) },
               { "<", (a,b)=>Expression.LessThan(Coerce(a,b), Coerce(b,a)) },
               { "<=", (a,b)=>Expression.LessThanOrEqual(Coerce(a,b), Coerce(b,a)) },
               { ">=", (a,b)=>Expression.GreaterThanOrEqual(Coerce(a,b), Coerce(b,a)) },
               { ">", (a,b)=>Expression.GreaterThan(Coerce(a,b), Coerce(b,a)) },
+*/
+              { "==", (a,b)=>CompareToExpression(a, b, c=>Expression.Equal             (c, _zero)) },
+              { "!=", (a,b)=>CompareToExpression(a, b, c=>Expression.NotEqual          (c, _zero)) },
+              { "<",  (a,b)=>CompareToExpression(a, b, c=>Expression.LessThan          (c, _zero)) },
+              { "<=", (a,b)=>CompareToExpression(a, b, c=>Expression.LessThanOrEqual   (c, _zero)) },
+              { ">=", (a,b)=>CompareToExpression(a, b, c=>Expression.GreaterThanOrEqual(c, _zero)) },
+              { ">",  (a,b)=>CompareToExpression(a, b, c=>Expression.GreaterThan       (c, _zero)) },
               { "+", (a,b)=>Expression.Add(Coerce(a,b), Coerce(b,a)) },
               { "-", (a,b)=>Expression.Subtract(Coerce(a,b), Coerce(b,a)) },
               { "*", (a,b)=>Expression.Multiply(Coerce(a,b), Coerce(b,a)) },
@@ -243,7 +266,7 @@ namespace PredicateParser
               var keyValue = Regex.Replace(CurrOptNext, @"^\[(?:\s*)(.*?)(?:\s*)\]$", m => m.Groups[1].Value);
 
               if (!typeof(IDictionary<string, object>).IsAssignableFrom(typeof(TData)))
-                 Abort("Unsupported indexer for source type");
+                 Abort("Unsupported indexer for source type: " + typeof(TData));
 
               Expression keyExpr = Expression.Constant(keyValue, typeof(string));
               return Expression.Property(_param, "Item", keyExpr);
