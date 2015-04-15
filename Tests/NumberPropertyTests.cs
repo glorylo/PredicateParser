@@ -28,6 +28,13 @@ namespace Tests
         }
 
         [Test]
+        public void VerifyNegateEqualsProperty()
+        {
+            var expr = @"!(Age == 50)";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
         public void VerifyIntNotEqualsProperty()
         {
             var expr = @"Age != 50";
@@ -169,7 +176,7 @@ namespace Tests
         [Test]
         public void VerifyDivProperty()
         {
-            var expr = @"Salary /2  == 1150.25";
+            var expr = @"Salary / 2  == 1150.25";
             Assert.IsTrue(EvalulateExpression(expr));
         }
 

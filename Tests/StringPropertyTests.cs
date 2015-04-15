@@ -38,6 +38,12 @@ namespace Tests
         }
 
         [Test]
+        public void VerifyNegataEqualsProperty()
+        {
+            var expr = @"!(FirstName == ""Sarah"")";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+        [Test]
         public void VerifyPropertyNotEquals()
         {
             var expr = @"FirstName != ""Sarah""";
