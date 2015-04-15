@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -8,8 +9,11 @@ using System.Text.RegularExpressions;
 
 // Forked version of PredicateParser originally by Andreas Gieriet
 // See this Article:  http://www.codeproject.com/Articles/355513/Invent-your-own-Dynamic-LINQ-parser
-  
-  namespace PredicateParser
+using Microsoft.CSharp.RuntimeBinder;
+using PredicateParser.Extensions;
+using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
+
+namespace PredicateParser
   {
       public abstract class PredicateParser
       {
@@ -55,7 +59,7 @@ using System.Text.RegularExpressions;
               @"""(?:\\.|[^""])*""", // string
               @"\d+(?:\.\d+)?", // number with optional decimal part
               @"\w+", // word
-              @"\[(?:\s*)((?:\w+\s*)+)(?:\s*)\]", // white space words in square brackets
+              @"\[(?:\s*)((?:\w+\s*)+)(?:\s*)\]", // indexer for square brackets
               @"\S", // other 1-char tokens (or eat up one character in case of an error)
           }) + @")\s*";
 
@@ -75,7 +79,7 @@ using System.Text.RegularExpressions;
           protected bool IsNumber { get { return char.IsNumber(Ch); } }
           protected bool IsDouble { get { return IsNumber && Curr.Contains('.'); } }
           protected bool IsString { get { return Ch == '"'; } }
-          protected bool IsWhiteSpaceIdent { get { return Ch == '['; }}
+          protected bool IsIndexer { get { return Ch == '['; }}
           protected bool IsIdent { get { char c = Ch; return char.IsLower(c) || char.IsUpper(c) || c == '_'; } }
           /// <summary>throw an argument exception</summary>
           protected static void Abort(string msg) { throw new ArgumentException("Parse Error: " + (msg ?? "unknown error")); }
@@ -110,14 +114,20 @@ using System.Text.RegularExpressions;
           private static Expression Coerce(Expression expr, Expression sibling)
           {
               if (expr.Type != sibling.Type)
-              {
+              {                  
                   Type maxType = MaxType(expr.Type, sibling.Type);
                   if (maxType != expr.Type) expr = Expression.Convert(expr, maxType);
               }
               return expr;
           }
+
           /// <summary>returns the first if both are same, or the largest type of both (or the first)</summary>
-          private static Type MaxType(Type a, Type b) { return a==b?a:(_prom.FirstOrDefault(t=>t==a||t==b)??a); }
+          private static Type MaxType(Type a, Type b)
+          {
+              if (a.IsDynamic() || b.IsDynamic())
+                  return typeof (object);
+              return a==b?a:(_prom.FirstOrDefault(t=>t==a||t==b)??a);
+          }
           /// <summary>
           /// Code generation of binary and unary epressions, utilizing type coercion where needed
           /// </summary>
@@ -175,11 +185,21 @@ using System.Text.RegularExpressions;
           /// <summary>create lambda parameter field or property access.</summary>
           private Expression ParameterMember( string s)
           {
-              if (!typeof (IDictionary<string, object>).IsAssignableFrom(typeof (TData)))
+              if (!typeof(TData).IsDynamic())
                   return Expression.PropertyOrField(_param, s);
 
-              Expression key = Expression.Constant(s, typeof(string));
-              return Expression.Property(_param, "Item", key);
+              var binder = Binder.GetMember(
+                  CSharpBinderFlags.None,
+                  s,
+                  typeof(ExpandoObject),
+                  new[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) }
+                  );
+              var member = Expression.Dynamic(binder, typeof(object), _param);
+#if DEBUG
+              Debug.WriteLine(member);
+#endif
+              return member;
+
           }
 
           /// <summary>create lambda expression</summary>
@@ -218,9 +238,15 @@ using System.Text.RegularExpressions;
               return expr;
           }
 
-          private Expression ParseWithSpaceIdent() {
-              return ParameterMember(Regex.Replace(
-                    CurrOptNext, @"^\[(?:\s*)(.*?)(?:\s*)\]$", m => m.Groups[1].Value));
+          private Expression ParseIndexer()
+          {
+              var keyValue = Regex.Replace(CurrOptNext, @"^\[(?:\s*)(.*?)(?:\s*)\]$", m => m.Groups[1].Value);
+
+              if (!typeof(IDictionary<string, object>).IsAssignableFrom(typeof(TData)))
+                 Abort("Unsupported indexer for source type");
+
+              Expression keyExpr = Expression.Constant(keyValue, typeof(string));
+              return Expression.Property(_param, "Item", keyExpr);
           }      
 
           private Expression ParseString()     { return Const(Regex.Replace(CurrOptNext, "^\"(.*)\"$",
@@ -230,7 +256,7 @@ using System.Text.RegularExpressions;
           private Expression ParsePrimary()
           {
               if (IsIdent) return ParseNestedIdent();
-              if (IsWhiteSpaceIdent) return ParseWithSpaceIdent();
+              if (IsIndexer) return ParseIndexer();
               if (IsString) return ParseString();
               if (IsNumber) return ParseNumber();
               return ParseNested();
