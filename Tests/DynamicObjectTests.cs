@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
 using NUnit.Framework;
 
@@ -20,6 +19,40 @@ namespace Tests
             product["Price"] = 34.99;
             product["Inventory Status"] = "In Stock";
             product["Quantity"] = 30;
+            product["Best Seller"] = true;
+            product["Sale Item"] = false;
+        }
+
+        [Test]
+        public void VerifyTrue()
+        {
+            var expr = @"[Best Seller] == true";
+            var product = Product as IDictionary<string, object>;
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
+        }
+
+        [Test]
+        public void VerifyFalse()
+        {
+            var expr = @"[Sale Item] == false";
+            var product = Product as IDictionary<string, object>;
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
+        }
+
+        [Test]
+        public void VerifyBoolNotEquals()
+        {
+            var expr = @"[Sale Item] != true";
+            var product = Product as IDictionary<string, object>;
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
+        }
+
+        [Test]
+        public void VerifyNegateBool()
+        {
+            var expr = @"![Sale Item] == true";
+            var product = Product as IDictionary<string, object>;
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
         }
 
         [Test]

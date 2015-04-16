@@ -19,7 +19,7 @@ namespace Tests
         [SetUp]
         public void BeforeTest()
         {
-            Subject = new Person { FirstName = "John", LastName = "Smith", Age = 60, Salary = 2300.50, PostalCode = "V5H0A7"};
+            Subject = new Person { FirstName = "John", LastName = "Smith", Age = 60, Salary = 2300.50, PostalCode = "V5H0A7", HasCar = false, HasSiblings = true };
         }
 
         [Test]

@@ -9,6 +9,8 @@ namespace Tests
         public int Age { get; set; }
         public double Salary { get; set; }
         public string PostalCode { get; set; }
+        public bool HasSiblings { get; set; }
+        public bool HasCar { get; set; }
 
         public void Inspect()
         {
@@ -17,6 +19,8 @@ namespace Tests
             Trace.WriteLine("Age:  " + Age);
             Trace.WriteLine("Salary:  " + Salary);
             Trace.WriteLine("Postal Code:  " + PostalCode);
+            Trace.WriteLine("Has Sibling:  " + HasSiblings);
+            Trace.WriteLine("Has Car:  " + HasCar);
         }
 
     }

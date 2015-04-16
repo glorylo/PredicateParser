@@ -50,11 +50,15 @@ namespace PredicateParser
           #region scanner
 
           protected static readonly string[] Operators = { "||", "&&", "==", "!=", "<=", ">=", "+", "-", "/", "*"};
+          protected static readonly string[] Booleans = { "true", "false" };
+          protected static readonly string Null = "null";
+
           /// <summary>tokenizer pattern: Optional-SpaceS...Token...Optional-Spaces</summary>
           private static readonly string _pattern = @"\s*(" + string.Join("|", new []
           {              
               string.Join("|", ReservedWords.Select(Regex.Escape)), // reserved words                   
               // operators and punctuation that are longer than one char: longest first
+              string.Join("|", Booleans.Select(Regex.Escape)),   // booleans
               string.Join("|", Operators.Select(Regex.Escape)),  // operators
               @"""(?:\\.|[^""])*""", // string
               @"\d+(?:\.\d+)?", // number with optional decimal part
@@ -76,6 +80,7 @@ namespace PredicateParser
                         .Select(m => m.Groups[1].Value).GetEnumerator();
               Move();
           }
+          protected bool IsBool { get { return (Curr == "true") || (Curr == "false");  } }
           protected bool IsNumber { get { return char.IsNumber(Ch); } }
           protected bool IsDouble { get { return IsNumber && Curr.Contains('.'); } }
           protected bool IsString { get { return Ch == '"'; } }
@@ -327,13 +332,20 @@ namespace PredicateParser
                                                  return Const(int.Parse(CurrOptNext)); }
           private Expression ParsePrimary()
           {
+              if (IsBool) return ParseBool();
               if (IsIdent) return ParseNestedIdent();
               if (IsIndexer) return ParseIndexer();
               if (IsString) return ParseString();
               if (IsNumber) return ParseNumber();
               return ParseNested();
           }
-          
+
+          private Expression ParseBool()
+          {
+              var boolValue = Convert.ToBoolean(CurrOptNext);
+             return Expression.Constant(boolValue, typeof(bool));
+          }
+
           private Expression ParseNested()
           {
               if (CurrAndNext != "(") Abort("(...) expected");

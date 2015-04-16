@@ -51,6 +51,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="BooleanPropertyTest.cs" />
     <Compile Include="DynamicObjectTests.cs" />
     <Compile Include="ExpressionEvaluator.cs" />
     <Compile Include="NumberPropertyTests.cs" />
