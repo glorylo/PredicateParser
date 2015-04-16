@@ -44,9 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompareExpression.cs" />
     <Compile Include="DynamicOp.cs" />
     <Compile Include="ExpressionHelper.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="MathExpression.cs" />
     <Compile Include="PredicateParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

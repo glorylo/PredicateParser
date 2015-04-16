@@ -107,104 +107,6 @@ namespace PredicateParser
           #region code generator          
           private static readonly Type _bool = typeof(bool);
           private static readonly Type _string = typeof(string);
-          private static readonly Type _object = typeof (object);
-
-          private static Expression CompareTo(ExpressionType expressionType, Expression compare)
-          {
-              Expression zero = Expression.Constant(0);
-              Expression expr = null; 
-              switch (expressionType)
-              {
-                  case ExpressionType.Equal:
-                      expr = Expression.Equal(compare, zero);
-                      break;
-
-                  case ExpressionType.NotEqual:
-                      expr = Expression.NotEqual(compare, zero);
-                      break;
-
-                  case ExpressionType.GreaterThan:
-                      expr = Expression.GreaterThan(compare, zero);
-                      break;
-
-                  case ExpressionType.GreaterThanOrEqual:
-                      expr = Expression.GreaterThanOrEqual(compare, zero);
-                      break;
-
-                  case ExpressionType.LessThan:
-                      expr = Expression.LessThan(compare, zero);
-                      break;
-
-                  case ExpressionType.LessThanOrEqual:
-                      expr = Expression.LessThanOrEqual(compare, zero);
-                      break;
-
-                  default:  
-                       Abort("unexpected compare type: " + expressionType);
-                       break;
-              }
-              return expr;
-          }
-
-          /// <summary>produce comparison based on IComparable types</summary>
-          //private static Expression CompareToExpression(Expression lhs, Expression rhs, Func<Expression, Expression> rel)
-          private Expression CompareToExpression(Expression lhs, Expression rhs, ExpressionType exprType)
-          {
-              if (lhs.Type.IsDynamic() || rhs.Type.IsDynamic())
-                  return DynamicOp.BinaryOpPredicate(ExpressionHelper.Coerce(lhs, _object), ExpressionHelper.Coerce(rhs, _object), exprType);
-
-              lhs = ExpressionHelper.Coerce(lhs, rhs);
-              rhs = ExpressionHelper.Coerce(rhs, lhs);
-              var compareToMethod = lhs.Type.GetMethod("CompareTo", new[] {rhs.Type})
-                                    ?? lhs.Type.GetMethod("CompareTo", new[] {typeof (object)});
-              if (compareToMethod == null)
-                  Abort("unexpected IComparable types for instance: " + lhs.Type + " compared to " + rhs.Type);
-              Expression compare = Expression.Call(lhs, compareToMethod, new []{ rhs });
-              return CompareTo(exprType, compare);
-          }
-
-          private static Expression NegateExpression(Expression lhs, ExpressionType expressionType)
-          {
-              if (lhs.Type.IsDynamic())
-                  return DynamicOp.UnaryOp(lhs, expressionType);
-              return Expression.Negate(lhs);
-          }
-          private static Expression MathExpression(Expression lhs, Expression rhs, ExpressionType expressionType)
-          {
-              var coerceLeft = ExpressionHelper.Coerce(lhs, rhs);
-              var coerceRight = ExpressionHelper.Coerce(rhs, lhs);
-
-              if (lhs.Type.IsDynamic() || rhs.Type.IsDynamic())
-                  DynamicOp.BinaryOp(coerceLeft, coerceRight, expressionType);
-
-              Expression exp = null;
-              switch (expressionType)
-              {
-                  case ExpressionType.Add:
-                      exp = Expression.Add(coerceLeft, coerceRight);
-                      break;
-
-                  case ExpressionType.Subtract:
-                      exp = Expression.Subtract(coerceLeft, coerceRight);
-                      break;
-
-                  case ExpressionType.Multiply:
-                      exp = Expression.Multiply(coerceLeft, coerceRight);
-                      break;
-
-                  case ExpressionType.Divide:
-                      exp = Expression.Divide(coerceLeft, coerceRight);
-                      break;
-
-                  case ExpressionType.Modulo:
-                      exp = Expression.Modulo(coerceLeft, coerceRight);
-                      break;
-                  default:
-                      Abort("unknown math type:  " + expressionType);
-                      break;
-              }
-              return exp;
-          }
 
           /// <summary>
           /// Code generation of binary and unary epressions, utilizing type coercion where needed
@@ -233,7 +135,7 @@ namespace PredicateParser
               new Dictionary<string, Func<Expression, Expression>>()
           {
               { "!", a=>Expression.Not(ExpressionHelper.Coerce(a, _bool)) },
-              { "-", a=>NegateExpression(a, ExpressionType.Negate) },
+              { "-", MathExpression.Negate },
           };
 
           /// <summary>create a constant of a value</summary>
@@ -272,17 +174,17 @@ namespace PredicateParser
               {
                  { "||", (a,b)=>Expression.OrElse(ExpressionHelper.Coerce(a, _bool), ExpressionHelper.Coerce(b, _bool)) },
                  { "&&", (a,b)=>Expression.AndAlso(ExpressionHelper.Coerce(a, _bool), ExpressionHelper.Coerce(b, _bool)) },
-                 { "==", (a,b)=>CompareToExpression(a, b, ExpressionType.Equal) },
-                 { "!=", (a,b)=>CompareToExpression(a, b, ExpressionType.NotEqual) },
-                 { "<",  (a,b)=>CompareToExpression(a, b, ExpressionType.LessThan) },
-                 { "<=", (a,b)=>CompareToExpression(a, b, ExpressionType.LessThanOrEqual) },
-                 { ">=", (a,b)=>CompareToExpression(a, b, ExpressionType.GreaterThanOrEqual) },
-                 { ">",  (a,b)=>CompareToExpression(a, b, ExpressionType.GreaterThan) },
-                 { "+",  (a,b)=>MathExpression(a,b, ExpressionType.Add) },
-                 { "-",  (a,b)=>MathExpression(a,b, ExpressionType.Subtract) },
-                 { "*",  (a,b)=>MathExpression(a,b, ExpressionType.Multiply) },
-                 { "/",  (a,b)=>MathExpression(a,b, ExpressionType.Divide) },
-                 { "%",  (a,b)=>MathExpression(a,b, ExpressionType.Modulo) },
+                 { "==", (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.Equal) },
+                 { "!=", (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.NotEqual) },
+                 { "<",  (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.LessThan) },
+                 { "<=", (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.LessThanOrEqual) },
+                 { ">=", (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.GreaterThanOrEqual) },
+                 { ">",  (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.GreaterThan) },
+                 { "+",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Add) },
+                 { "-",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Subtract) },
+                 { "*",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Multiply) },
+                 { "/",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Divide) },
+                 { "%",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Modulo) },
                  { "StartsWith?", (a,b)=> ReservedWordPredicate("StartsWith?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
                  { "EndsWith?", (a,b)=> ReservedWordPredicate("EndsWith?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
                  { "Containing?", (a,b)=> ReservedWordPredicate("Containing?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
