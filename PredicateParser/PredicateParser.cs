@@ -25,23 +25,11 @@ namespace PredicateParser
           protected static readonly IDictionary<string, Func<Expression, Expression, Expression>> BuiltInReservedWords = 
               new Dictionary<string, Func<Expression, Expression, Expression>>
               {
-              { "StartsWith?", (lhs, rhs) => Expression.Call(lhs, GetMethodInfo("StartsWith", new [] { typeof(string) }), new [] {rhs}) },
-              { "EndsWith?", (lhs, rhs) => Expression.Call(lhs, GetMethodInfo("EndsWith", new [] { typeof(string) }), new [] {rhs})  },
-              { "Containing?", (lhs, rhs) => Expression.Call(lhs, GetMethodInfo("Contains" , new [] { typeof(string)}), new [] {rhs}) },
-              { "Matching?", (lhs, rhs) =>
-              {
-                    var matchMethod = typeof (Regex).GetMethod("Match", new[] {typeof (string), typeof (string)});
-                    var args = new[] { lhs }.Concat(new[] { rhs });
-                    Expression callExp = Expression.Call(matchMethod, args);
-                    var result = Expression.Parameter(typeof(Match), "result");
-                    var block = Expression.Block(
-                                 new[] { result },                             
-                                 Expression.Assign(result, callExp),
-                                 Expression.PropertyOrField(result, "Success")                         
-                    );
-                    return block;                  
-                }},
-              { "Equals?", (lhs, rhs) => Expression.Call(lhs, GetMethodInfo("Equals" , new [] { typeof(string)}), new [] {rhs}) },
+              { "StartsWith?", StringExpression.StartsWith },
+              { "EndsWith?", StringExpression.EndsWith },
+              { "Containing?", StringExpression.Containing },
+              { "Matching?", StringExpression.Matching },
+              { "Equals?", StringExpression.Equals },
           }; 
 
           #endregion
