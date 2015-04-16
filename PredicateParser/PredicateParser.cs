@@ -20,8 +20,6 @@ namespace PredicateParser
 
           protected static readonly string[] ReservedWords = {"StartsWith?", "EndsWith?", "Containing?", "Matching?", "Equals?"};
 
-          protected static MethodInfo GetMethodInfo(string name, Type[] types) { return typeof(string).GetMethod(name, types); }
-
           protected static readonly IDictionary<string, Func<Expression, Expression, Expression>> BuiltInReservedWords = 
               new Dictionary<string, Func<Expression, Expression, Expression>>
               {
@@ -112,9 +110,6 @@ namespace PredicateParser
               if (!ReservedWords.Contains(reservedWord))
                   Abort("unknown reserved word:  " + reservedWord);
 
-              if (lhs.Type != typeof(string) || rhs.Type != typeof(string))
-                  Abort("expecting string type for predicate");
-
               lhs = ExpressionHelper.Coerce(lhs, _string);
               rhs = ExpressionHelper.Coerce(rhs, _string);
               return BuiltInReservedWords[reservedWord](lhs, rhs);
@@ -152,22 +147,22 @@ namespace PredicateParser
               {
                  { "||", BooleanExpression.Or },
                  { "&&", BooleanExpression.And },
-                 { "==", (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.Equal) },
-                 { "!=", (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.NotEqual) },
-                 { "<",  (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.LessThan) },
-                 { "<=", (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.LessThanOrEqual) },
-                 { ">=", (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.GreaterThanOrEqual) },
-                 { ">",  (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.GreaterThan) },
-                 { "+",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Add) },
-                 { "-",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Subtract) },
-                 { "*",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Multiply) },
-                 { "/",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Divide) },
-                 { "%",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Modulo) },
-                 { "StartsWith?", (a,b)=> ReservedWordPredicate("StartsWith?", ExpressionHelper.Coerce(a, _string), ExpressionHelper.Coerce(b, _string)) },
-                 { "EndsWith?", (a,b)=> ReservedWordPredicate("EndsWith?", ExpressionHelper.Coerce(a, _string), ExpressionHelper.Coerce(b, _string)) },
-                 { "Containing?", (a,b)=> ReservedWordPredicate("Containing?", ExpressionHelper.Coerce(a, _string), ExpressionHelper.Coerce(b, _string)) },
-                 { "Matching?", (a,b)=> ReservedWordPredicate("Matching?", ExpressionHelper.Coerce(a, _string), ExpressionHelper.Coerce(b, _string)) },
-                 { "Equals?", (a,b)=> ReservedWordPredicate("Equals?", ExpressionHelper.Coerce(a, _string), ExpressionHelper.Coerce(b, _string)) }
+                 { "==", (lhs,rhs)=>CompareExpression.CompareTo(lhs, rhs, ExpressionType.Equal) },
+                 { "!=", (lhs,rhs)=>CompareExpression.CompareTo(lhs, rhs, ExpressionType.NotEqual) },
+                 { "<",  (lhs,rhs)=>CompareExpression.CompareTo(lhs, rhs, ExpressionType.LessThan) },
+                 { "<=", (lhs,rhs)=>CompareExpression.CompareTo(lhs, rhs, ExpressionType.LessThanOrEqual) },
+                 { ">=", (lhs,rhs)=>CompareExpression.CompareTo(lhs, rhs, ExpressionType.GreaterThanOrEqual) },
+                 { ">",  (lhs,rhs)=>CompareExpression.CompareTo(lhs, rhs, ExpressionType.GreaterThan) },
+                 { "+",  (lhs,rhs)=>MathExpression.MathOp(lhs,rhs, ExpressionType.Add) },
+                 { "-",  (lhs,rhs)=>MathExpression.MathOp(lhs,rhs, ExpressionType.Subtract) },
+                 { "*",  (lhs,rhs)=>MathExpression.MathOp(lhs,rhs, ExpressionType.Multiply) },
+                 { "/",  (lhs,rhs)=>MathExpression.MathOp(lhs,rhs, ExpressionType.Divide) },
+                 { "%",  (lhs,rhs)=>MathExpression.MathOp(lhs,rhs, ExpressionType.Modulo) },
+                 { "StartsWith?", (lhs,rhs)=> ReservedWordPredicate("StartsWith?", lhs, rhs) },
+                 { "EndsWith?", (lhs,rhs)=> ReservedWordPredicate("EndsWith?", lhs, rhs) },
+                 { "Containing?", (lhs,rhs)=> ReservedWordPredicate("Containing?", lhs, rhs) },
+                 { "Matching?", (lhs,rhs)=> ReservedWordPredicate("Matching?", lhs, rhs) },
+                 { "Equals?", (lhs,rhs)=> ReservedWordPredicate("Equals?", lhs, rhs) }
              };
               
           }
