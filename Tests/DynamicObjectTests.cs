@@ -161,7 +161,7 @@ namespace Tests
         [Test]
         public void VerifyDivCondition()
         {
-            var expr = @"Quantity /2 == 15";
+            var expr = @"Quantity / 2 == 15";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
@@ -171,6 +171,51 @@ namespace Tests
             var expr = @"Quantity % 5 == 0";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
+
+        [Test]
+        public void VerifyNestedMathCondition()
+        {
+            var expr = @"Quantity + (3 * 5) == 45";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyRealNumberAddCondition()
+        {
+            var expr = @"Price + 10.01 == 45.0";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyRealNumberSubtractCondition()
+        {
+            var expr = @"Price - 10.99 == 24.0";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyRealMultCondition()
+        {
+            var expr = @"Price * 2.0 == 69.98";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyRealDivCondition()
+        {
+            var expr = @"Price / 2.0 == 17.495";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        //  doesn't work
+/*
+        [Test]
+        public void VerifyRealModCondition()
+        {
+            var expr = @"Price % 1.0 == 34.99";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+*/
 
 
     }
