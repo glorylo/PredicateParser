@@ -14,26 +14,36 @@ namespace PredicateParser
         
         public static Expression StartsWith(Expression lhs, Expression rhs)
         {
+            lhs = ExpressionHelper.Coerce(lhs, _string);
+            rhs = ExpressionHelper.Coerce(rhs, _string);
             return Expression.Call(lhs, GetMethodInfo("StartsWith", new[] { typeof(string) }), new[] { rhs });
         }
 
         public static Expression EndsWith(Expression lhs, Expression rhs)
         {
+            lhs = ExpressionHelper.Coerce(lhs, _string);
+            rhs = ExpressionHelper.Coerce(rhs, _string);            
             return Expression.Call(lhs, GetMethodInfo("EndsWith", new[] {typeof (string)}), new[] {rhs});
         }
 
         public static Expression Containing(Expression lhs, Expression rhs)
         {
+            lhs = ExpressionHelper.Coerce(lhs, _string);
+            rhs = ExpressionHelper.Coerce(rhs, _string);
             return Expression.Call(lhs, GetMethodInfo("Contains", new[] {typeof (string)}), new[] {rhs});
         }
 
         public static Expression Equals(Expression lhs, Expression rhs)
         {
+            lhs = ExpressionHelper.Coerce(lhs, _string);
+            rhs = ExpressionHelper.Coerce(rhs, _string);
             return Expression.Call(lhs, GetMethodInfo("Equals", new[] {typeof (string)}), new[] {rhs});
         }
 
         public static Expression Matching(Expression lhs, Expression rhs)
         {
+            lhs = ExpressionHelper.Coerce(lhs, _string);
+            rhs = ExpressionHelper.Coerce(rhs, _string);
             var matchMethod = typeof(Regex).GetMethod("Match", new[] { typeof(string), typeof(string) });
             var args = new[] { lhs }.Concat(new [] {rhs});
             Expression callExp = Expression.Call(matchMethod, args);

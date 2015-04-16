@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using Microsoft.CSharp.RuntimeBinder;
 using PredicateParser.Extensions;
 
 
@@ -91,7 +88,6 @@ namespace PredicateParser
       public class PredicateParser<TData>: PredicateParser
       {
           #region code generator          
-          private static readonly Type _string = typeof(string);
 
           /// <summary>
           /// Code generation of binary and unary epressions, utilizing type coercion where needed
@@ -110,8 +106,6 @@ namespace PredicateParser
               if (!ReservedWords.Contains(reservedWord))
                   Abort("unknown reserved word:  " + reservedWord);
 
-              lhs = ExpressionHelper.Coerce(lhs, _string);
-              rhs = ExpressionHelper.Coerce(rhs, _string);
               return BuiltInReservedWords[reservedWord](lhs, rhs);
           }
 
