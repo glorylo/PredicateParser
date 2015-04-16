@@ -17,7 +17,16 @@ namespace Tests
         [SetUp]
         public void BeforeTest()
         {
-            Subject = new Person { FirstName = "John", LastName = "Smith", Age = 60, Salary = 2300.50, PostalCode = "V5H0A7", HasCar = false, HasSiblings = true };
+            Subject = new Person
+            {
+                 FirstName = "John", 
+                 LastName = "Smith", 
+                 Age = 60, 
+                 Salary = 2300.50, 
+                 PostalCode = "V5H0A7", 
+                 HasCar = false, 
+                 HasSiblings = true
+            };
         }
 
         [Test]
@@ -150,6 +159,20 @@ namespace Tests
             Subject.Salary = 1999.99;
             Assert.IsTrue(EvalulateExpression(expr));
             
+        }
+
+        [Test]
+        public void VerifyNegativeIntEquals()
+        {
+            var expr = @"-Age == -60";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyNegativeRealNumberEquals()
+        {
+            var expr = @"-Salary == -2300.50";
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
