@@ -157,8 +157,7 @@ namespace Tests
         {
             var expr = @"Salary > 2300.60 || Salary < 2000";
             Subject.Salary = 1999.99;
-            Assert.IsTrue(EvalulateExpression(expr));
-            
+            Assert.IsTrue(EvalulateExpression(expr));            
         }
 
         [Test]

@@ -171,6 +171,13 @@ namespace Tests
         }
 
         [Test]
+        public void VerifyNegativeIntCondition()
+        {
+            var expr = @"-Quantity  == -30";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+       
+        [Test]
         public void VerifyAddCondition()
         {
             var expr = @"Quantity + 10 == 40";
@@ -209,6 +216,13 @@ namespace Tests
         public void VerifyNestedMathCondition()
         {
             var expr = @"Quantity + (3 * 5) == 45";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyNegativeRealCondition()
+        {
+            var expr = @"-Price  == -34.99";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 

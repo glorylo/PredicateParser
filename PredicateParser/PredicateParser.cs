@@ -163,7 +163,12 @@ namespace PredicateParser
               return CompareTo(exprType, compare);
           }
 
-
+          private static Expression NegateExpression(Expression lhs, ExpressionType expressionType)
+          {
+              if (lhs.Type.IsDynamic())
+                  return DynamicOp.UnaryOp(lhs, expressionType);
+              return Expression.Negate(lhs);
+          }
           private static Expression MathExpression(Expression lhs, Expression rhs, ExpressionType expressionType)
           {
               var coerceLeft = ExpressionHelper.Coerce(lhs, rhs);
@@ -228,7 +233,7 @@ namespace PredicateParser
               new Dictionary<string, Func<Expression, Expression>>()
           {
               { "!", a=>Expression.Not(ExpressionHelper.Coerce(a, _bool)) },
-              { "-", Expression.Negate },
+              { "-", a=>NegateExpression(a, ExpressionType.Negate) },
           };
 
           /// <summary>create a constant of a value</summary>
