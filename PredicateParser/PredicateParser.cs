@@ -22,16 +22,16 @@ namespace PredicateParser
 
           protected static MethodInfo GetMethodInfo(string name, Type[] types) { return typeof(string).GetMethod(name, types); }
 
-          protected static readonly IDictionary<string, Func<Expression, IEnumerable<Expression>, Expression>> _builtInReservedWords = 
-              new Dictionary<string, Func<Expression, IEnumerable<Expression>, Expression>>
+          protected static readonly IDictionary<string, Func<Expression, Expression, Expression>> BuiltInReservedWords = 
+              new Dictionary<string, Func<Expression, Expression, Expression>>
               {
-              { "StartsWith?", (instance, args) => Expression.Call(instance, GetMethodInfo("StartsWith", new [] { typeof(string) }), args) },
-              { "EndsWith?", (instance, args) => Expression.Call(instance, GetMethodInfo("EndsWith", new [] { typeof(string) }), args)  },
-              { "Containing?", (instance, args) => Expression.Call(instance, GetMethodInfo("Contains" , new [] { typeof(string)}), args) },
-              { "Matching?", (str, pattern) =>
+              { "StartsWith?", (lhs, rhs) => Expression.Call(lhs, GetMethodInfo("StartsWith", new [] { typeof(string) }), new [] {rhs}) },
+              { "EndsWith?", (lhs, rhs) => Expression.Call(lhs, GetMethodInfo("EndsWith", new [] { typeof(string) }), new [] {rhs})  },
+              { "Containing?", (lhs, rhs) => Expression.Call(lhs, GetMethodInfo("Contains" , new [] { typeof(string)}), new [] {rhs}) },
+              { "Matching?", (lhs, rhs) =>
               {
                     var matchMethod = typeof (Regex).GetMethod("Match", new[] {typeof (string), typeof (string)});
-                    var args = new [] {str}.Concat(pattern);
+                    var args = new[] { lhs }.Concat(new[] { rhs });
                     Expression callExp = Expression.Call(matchMethod, args);
                     var result = Expression.Parameter(typeof(Match), "result");
                     var block = Expression.Block(
@@ -41,7 +41,7 @@ namespace PredicateParser
                     );
                     return block;                  
                 }},
-              { "Equals?", (instance, args) => Expression.Call(instance, GetMethodInfo("Equals" , new [] { typeof(string)}), args) },
+              { "Equals?", (lhs, rhs) => Expression.Call(lhs, GetMethodInfo("Equals" , new [] { typeof(string)}), new [] {rhs}) },
           }; 
 
           #endregion
@@ -127,7 +127,9 @@ namespace PredicateParser
               if (lhs.Type != typeof(string) || rhs.Type != typeof(string))
                   Abort("expecting string type for predicate");
 
-              return _builtInReservedWords[reservedWord](lhs, new[] {rhs});
+              lhs = ExpressionHelper.Coerce(lhs, _string);
+              rhs = ExpressionHelper.Coerce(rhs, _string);
+              return BuiltInReservedWords[reservedWord](lhs, rhs);
           }
 
           private static readonly Dictionary<string, Func<Expression, Expression>> _unOp =
@@ -173,11 +175,11 @@ namespace PredicateParser
                  { "*",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Multiply) },
                  { "/",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Divide) },
                  { "%",  (a,b)=>MathExpression.MathOp(a,b, ExpressionType.Modulo) },
-                 { "StartsWith?", (a,b)=> ReservedWordPredicate("StartsWith?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
-                 { "EndsWith?", (a,b)=> ReservedWordPredicate("EndsWith?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
-                 { "Containing?", (a,b)=> ReservedWordPredicate("Containing?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
-                 { "Matching?", (a,b)=> ReservedWordPredicate("Matching?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
-                 { "Equals?", (a,b)=> ReservedWordPredicate("Equals?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) }
+                 { "StartsWith?", (a,b)=> ReservedWordPredicate("StartsWith?", ExpressionHelper.Coerce(a, _string), ExpressionHelper.Coerce(b, _string)) },
+                 { "EndsWith?", (a,b)=> ReservedWordPredicate("EndsWith?", ExpressionHelper.Coerce(a, _string), ExpressionHelper.Coerce(b, _string)) },
+                 { "Containing?", (a,b)=> ReservedWordPredicate("Containing?", ExpressionHelper.Coerce(a, _string), ExpressionHelper.Coerce(b, _string)) },
+                 { "Matching?", (a,b)=> ReservedWordPredicate("Matching?", ExpressionHelper.Coerce(a, _string), ExpressionHelper.Coerce(b, _string)) },
+                 { "Equals?", (a,b)=> ReservedWordPredicate("Equals?", ExpressionHelper.Coerce(a, _string), ExpressionHelper.Coerce(b, _string)) }
              };
               
           }
