@@ -6,7 +6,6 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using PredicateParser.Extensions;
 
-
 // Forked version of PredicateParser originally by Andreas Gieriet
 // See this Article:  http://www.codeproject.com/Articles/355513/Invent-your-own-Dynamic-LINQ-parser
 namespace PredicateParser
@@ -26,7 +25,6 @@ namespace PredicateParser
               { "Matching?", StringExpression.Matching },
               { "Equals?", StringExpression.Equals },
           }; 
-
           #endregion
           #region scanner
 
@@ -89,9 +87,6 @@ namespace PredicateParser
       {
           #region code generator          
 
-          /// <summary>
-          /// Code generation of binary and unary epressions, utilizing type coercion where needed
-          /// </summary>
           private readonly Dictionary<string, Func<Expression, Expression, Expression>> _binaryOperators; 
 
           /// <summary>
@@ -235,15 +230,8 @@ namespace PredicateParser
               while ((op = CurrOpAndNext(ops)) != null) expr = _binaryOperators[op](expr, parse());
               return expr;
           }
-
-          
           #endregion
       }
-        
-
-
-   
-
   
   }
 
