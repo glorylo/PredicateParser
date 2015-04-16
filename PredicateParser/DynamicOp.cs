@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Dynamic;
 using System.Linq.Expressions;
 using Microsoft.CSharp.RuntimeBinder;
+using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
 namespace PredicateParser
 {
@@ -32,6 +35,21 @@ namespace PredicateParser
         public static Expression BinaryOpPredicate(Expression lhs, Expression rhs, ExpressionType expressionType)
         {
             return Expression.Convert(BinaryOp(lhs, rhs, expressionType), typeof(bool));
+        }
+
+        public static Expression GetMember(Expression lhs, string memberName)
+        {
+            var binder = Binder.GetMember(
+                CSharpBinderFlags.None,
+                memberName,
+                typeof(ExpandoObject),
+                new[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) }
+                );
+            var member = Expression.Dynamic(binder, typeof(object), lhs);
+#if DEBUG
+            Debug.WriteLine(member);
+#endif
+            return member;            
         }
     }
 }

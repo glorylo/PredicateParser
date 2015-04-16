@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.CSharp.RuntimeBinder;
 using PredicateParser.Extensions;
-using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
+
 
 // Forked version of PredicateParser originally by Andreas Gieriet
 // See this Article:  http://www.codeproject.com/Articles/355513/Invent-your-own-Dynamic-LINQ-parser
@@ -105,7 +105,6 @@ namespace PredicateParser
       public class PredicateParser<TData>: PredicateParser
       {
           #region code generator          
-          //private static readonly Type _bool = typeof(bool);
           private static readonly Type _string = typeof(string);
 
           /// <summary>
@@ -146,18 +145,7 @@ namespace PredicateParser
           {
               if (!typeof(TData).IsDynamic())
                   return Expression.PropertyOrField(_param, s);
-
-              var binder = Binder.GetMember(
-                  CSharpBinderFlags.None,
-                  s,
-                  typeof(ExpandoObject),
-                  new[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) }
-                  );
-              var member = Expression.Dynamic(binder, typeof(object), _param);
-#if DEBUG
-              Debug.WriteLine(member);
-#endif
-              return member;
+              return DynamicOp.GetMember(_param, s);
           }
 
           /// <summary>create lambda expression</summary>
