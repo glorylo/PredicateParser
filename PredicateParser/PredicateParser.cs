@@ -144,7 +144,7 @@ namespace PredicateParser
 
           /// <summary>produce comparison based on IComparable types</summary>
           //private static Expression CompareToExpression(Expression lhs, Expression rhs, Func<Expression, Expression> rel)
-          private static Expression CompareToExpression(Expression lhs, Expression rhs, ExpressionType exprType)
+          private Expression CompareToExpression(Expression lhs, Expression rhs, ExpressionType exprType)
           {
               if (lhs.Type.IsDynamic() || rhs.Type.IsDynamic())
                   return DynamicOp.BinaryOpPredicate(ExpressionHelper.Coerce(lhs, _object), ExpressionHelper.Coerce(rhs, _object), exprType);
@@ -200,28 +200,7 @@ namespace PredicateParser
           /// <summary>
           /// Code generation of binary and unary epressions, utilizing type coercion where needed
           /// </summary>
-          private static readonly Dictionary<string, Func<Expression, Expression, Expression>> _binOp =
-              new Dictionary<string,Func<Expression,Expression,Expression>>()
-          {
-              { "||", (a,b)=>Expression.OrElse(ExpressionHelper.Coerce(a, _bool), ExpressionHelper.Coerce(b, _bool)) },
-              { "&&", (a,b)=>Expression.AndAlso(ExpressionHelper.Coerce(a, _bool), ExpressionHelper.Coerce(b, _bool)) },
-              { "==", (a,b)=>CompareToExpression(a, b, ExpressionType.Equal) },
-              { "!=", (a,b)=>CompareToExpression(a, b, ExpressionType.NotEqual) },
-              { "<",  (a,b)=>CompareToExpression(a, b, ExpressionType.LessThan) },
-              { "<=", (a,b)=>CompareToExpression(a, b, ExpressionType.LessThanOrEqual) },
-              { ">=", (a,b)=>CompareToExpression(a, b, ExpressionType.GreaterThanOrEqual) },
-              { ">",  (a,b)=>CompareToExpression(a, b, ExpressionType.GreaterThan) },
-              { "+",  (a,b)=>MathExpression(a,b, ExpressionType.Add) },
-              { "-",  (a,b)=>MathExpression(a,b, ExpressionType.Subtract) },
-              { "*",  (a,b)=>MathExpression(a,b, ExpressionType.Multiply) },
-              { "/",  (a,b)=>MathExpression(a,b, ExpressionType.Divide) },
-              { "%",  (a,b)=>MathExpression(a,b, ExpressionType.Modulo) },
-              { "StartsWith?", (a,b)=> ReservedWordPredicate("StartsWith?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
-              { "EndsWith?", (a,b)=> ReservedWordPredicate("EndsWith?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
-              { "Containing?", (a,b)=> ReservedWordPredicate("Containing?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
-              { "Matching?", (a,b)=> ReservedWordPredicate("Matching?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
-              { "Equals?", (a,b)=> ReservedWordPredicate("Equals?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) }
-          };
+          private readonly Dictionary<string, Func<Expression, Expression, Expression>> _binaryOperators; 
 
           /// <summary>
           /// Creates a expression for the reserved words:  StartsWith?, EndsWith?, etc.
@@ -276,8 +255,33 @@ namespace PredicateParser
           private readonly ParameterExpression _param = Expression.Parameter(typeof(TData), "_p_");
           #endregion
           #region parser
+
           /// <summary>initialize the parser (and thus, the scanner)</summary>
-          private PredicateParser(string s): base(s) { }
+          private PredicateParser(string s) : base(s)
+          {
+              _binaryOperators = new Dictionary<string, Func<Expression, Expression, Expression>>
+              {
+                 { "||", (a,b)=>Expression.OrElse(ExpressionHelper.Coerce(a, _bool), ExpressionHelper.Coerce(b, _bool)) },
+                 { "&&", (a,b)=>Expression.AndAlso(ExpressionHelper.Coerce(a, _bool), ExpressionHelper.Coerce(b, _bool)) },
+                 { "==", (a,b)=>CompareToExpression(a, b, ExpressionType.Equal) },
+                 { "!=", (a,b)=>CompareToExpression(a, b, ExpressionType.NotEqual) },
+                 { "<",  (a,b)=>CompareToExpression(a, b, ExpressionType.LessThan) },
+                 { "<=", (a,b)=>CompareToExpression(a, b, ExpressionType.LessThanOrEqual) },
+                 { ">=", (a,b)=>CompareToExpression(a, b, ExpressionType.GreaterThanOrEqual) },
+                 { ">",  (a,b)=>CompareToExpression(a, b, ExpressionType.GreaterThan) },
+                 { "+",  (a,b)=>MathExpression(a,b, ExpressionType.Add) },
+                 { "-",  (a,b)=>MathExpression(a,b, ExpressionType.Subtract) },
+                 { "*",  (a,b)=>MathExpression(a,b, ExpressionType.Multiply) },
+                 { "/",  (a,b)=>MathExpression(a,b, ExpressionType.Divide) },
+                 { "%",  (a,b)=>MathExpression(a,b, ExpressionType.Modulo) },
+                 { "StartsWith?", (a,b)=> ReservedWordPredicate("StartsWith?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
+                 { "EndsWith?", (a,b)=> ReservedWordPredicate("EndsWith?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
+                 { "Containing?", (a,b)=> ReservedWordPredicate("Containing?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
+                 { "Matching?", (a,b)=> ReservedWordPredicate("Matching?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) },
+                 { "Equals?", (a,b)=> ReservedWordPredicate("Equals?", ExpressionHelper.Coerce(a,_string), ExpressionHelper.Coerce(b,_string)) }
+             };
+              
+          }
           /// <summary>main entry point</summary>
           public static Expression<Func<TData, bool>> Parse(string s) { return new PredicateParser<TData>(s).Parse(); }
           public static bool TryParse(string s) { try { Parse(s); } catch (Exception e) { Trace.WriteLine("Parsing exception: \n" + e.StackTrace); return false; } return true; }
@@ -343,7 +347,7 @@ namespace PredicateParser
           {
               Expression expr = parse();
               string op;
-              while ((op = CurrOpAndNext(ops)) != null) expr = _binOp[op](expr, parse());
+              while ((op = CurrOpAndNext(ops)) != null) expr = _binaryOperators[op](expr, parse());
               return expr;
           }
 
