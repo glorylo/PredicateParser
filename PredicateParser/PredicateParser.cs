@@ -105,7 +105,7 @@ namespace PredicateParser
       public class PredicateParser<TData>: PredicateParser
       {
           #region code generator          
-          private static readonly Type _bool = typeof(bool);
+          //private static readonly Type _bool = typeof(bool);
           private static readonly Type _string = typeof(string);
 
           /// <summary>
@@ -134,7 +134,7 @@ namespace PredicateParser
           private static readonly Dictionary<string, Func<Expression, Expression>> _unOp =
               new Dictionary<string, Func<Expression, Expression>>()
           {
-              { "!", a=>Expression.Not(ExpressionHelper.Coerce(a, _bool)) },
+              { "!", BooleanExpression.Not },
               { "-", MathExpression.Negate },
           };
 
@@ -172,8 +172,8 @@ namespace PredicateParser
           {
               _binaryOperators = new Dictionary<string, Func<Expression, Expression, Expression>>
               {
-                 { "||", (a,b)=>Expression.OrElse(ExpressionHelper.Coerce(a, _bool), ExpressionHelper.Coerce(b, _bool)) },
-                 { "&&", (a,b)=>Expression.AndAlso(ExpressionHelper.Coerce(a, _bool), ExpressionHelper.Coerce(b, _bool)) },
+                 { "||", BooleanExpression.Or },
+                 { "&&", BooleanExpression.And },
                  { "==", (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.Equal) },
                  { "!=", (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.NotEqual) },
                  { "<",  (a,b)=>CompareExpression.CompareTo(a, b, ExpressionType.LessThan) },
