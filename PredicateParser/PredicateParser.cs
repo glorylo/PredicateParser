@@ -6,18 +6,16 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-
-// Forked version of PredicateParser originally by Andreas Gieriet
-// See this Article:  http://www.codeproject.com/Articles/355513/Invent-your-own-Dynamic-LINQ-parser
 using Microsoft.CSharp.RuntimeBinder;
 using PredicateParser.Extensions;
 using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
+// Forked version of PredicateParser originally by Andreas Gieriet
+// See this Article:  http://www.codeproject.com/Articles/355513/Invent-your-own-Dynamic-LINQ-parser
 namespace PredicateParser
   {
       public abstract class PredicateParser
       {
-
           #region built-in reserved words
 
           protected static readonly string[] ReservedWords = {"StartsWith?", "EndsWith?", "Containing?", "Matching?", "Equals?"};
@@ -103,6 +101,7 @@ namespace PredicateParser
           }
           #endregion
       }
+
       public class PredicateParser<TData>: PredicateParser
       {
           #region code generator          
@@ -343,7 +342,7 @@ namespace PredicateParser
           private Expression ParseBool()
           {
               var boolValue = Convert.ToBoolean(CurrOptNext);
-             return Expression.Constant(boolValue, typeof(bool));
+              return Expression.Constant(boolValue, typeof(bool));
           }
 
           private Expression ParseNested()
