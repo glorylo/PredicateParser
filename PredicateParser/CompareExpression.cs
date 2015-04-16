@@ -47,7 +47,7 @@ namespace PredicateParser
         public static Expression CompareTo(Expression lhs, Expression rhs, ExpressionType exprType)
         {
             if (lhs.Type.IsDynamic() || rhs.Type.IsDynamic())
-                return DynamicOp.BinaryOpPredicate(ExpressionHelper.Coerce(lhs, typeof(object)), ExpressionHelper.Coerce(rhs, typeof(object)), exprType);
+                return DynamicOp.BinaryOpPredicate(lhs, rhs, exprType);
 
             lhs = ExpressionHelper.Coerce(lhs, rhs);
             rhs = ExpressionHelper.Coerce(rhs, lhs);

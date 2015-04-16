@@ -34,6 +34,8 @@ namespace PredicateParser
 
         public static Expression BinaryOpPredicate(Expression lhs, Expression rhs, ExpressionType expressionType)
         {
+            lhs = ExpressionHelper.Coerce(lhs, typeof (object));
+            rhs = ExpressionHelper.Coerce(rhs, typeof(object));
             return Expression.Convert(BinaryOp(lhs, rhs, expressionType), typeof(bool));
         }
 
