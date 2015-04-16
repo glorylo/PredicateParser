@@ -6,3 +6,4 @@ Tests/obj/
 .nuget/
 packages/
 *.sln.DotSettings.user
+*.nupkg

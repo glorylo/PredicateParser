@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/glorylo/PredicateParser/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/glorylo/PredicateParser</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial release of the PredicateParser.</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>Predicate Expressions Parser Eval</tags>
+  </metadata>
+</package>
