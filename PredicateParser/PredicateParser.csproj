@@ -45,7 +45,6 @@
     <Compile Include="ExpressionHelper.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="PredicateParser.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
