@@ -114,14 +114,6 @@ namespace PredicateParser
           /// <summary>create a constant of a value</summary>
           private static ConstantExpression Const(object v) { return Expression.Constant(v); }
 
-          /// <summary>create lambda parameter field or property access.</summary>
-          private Expression ParameterMember( string s)
-          {
-              if (!typeof(TData).IsDynamic())
-                  return Expression.PropertyOrField(_param, s);
-              return DynamicOp.GetMember(_param, s);
-          }
-
           /// <summary>create lambda expression</summary>
           private Expression<Func<TData, bool>> Lambda(Expression expr) { return Expression.Lambda<Func<TData, bool>>(expr, _param); }
           /// <summary>the lambda's parameter (all names are members of this)</summary>
@@ -178,8 +170,8 @@ namespace PredicateParser
           // parsing single or nested identifiers. EBNF: ParseIdent = ident { "." ident } .
           private Expression ParseNestedIdent()
           {
-              Expression expr = ParameterMember(CurrOptNext);
-              while (CurrOpAndNext(".") != null && IsIdent) expr = Expression.PropertyOrField(expr, CurrOptNext);
+              Expression expr = ParameterMemberExpression.Member(_param, CurrOptNext);
+              while (CurrOpAndNext(".") != null && IsIdent) expr = ParameterMemberExpression.Member(expr, CurrOptNext);
               return expr;
           }
 
@@ -190,8 +182,7 @@ namespace PredicateParser
               if (!typeof(IDictionary<string, object>).IsAssignableFrom(typeof(TData)))
                  Abort("unsupported indexer for source type: " + typeof(TData));
 
-              Expression keyExpr = Expression.Constant(keyValue, typeof(string));
-              return Expression.Property(_param, "Item", keyExpr);
+              return ParameterMemberExpression.GetDictionaryValue(_param, keyValue);
           }      
 
           private Expression ParseString()     { return Const(Regex.Replace(CurrOptNext, "^\"(.*)\"$",
