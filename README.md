@@ -6,21 +6,20 @@ I wanted something simpler and a basic language to declare predicates on some ob
 
 This work is originally based from PredicateParser by Andreas Gieriet. See this Article:  http://www.codeproject.com/Articles/355513/Invent-your-own-Dynamic-LINQ-parser
 
-#Release Notes
+# Usage
 
+Example of using the parser:
 
-#### Features 
-- Access property fields via dynamic objects 
-- Added string built in predicates
-- Added indexer support w/ square brackets for IDictionary<string,object>
-- Added support for booleans:  true and false
+```cs
+var john = new Person()  { Name = "John", Age = 35 };
+    var expression = @"Age > 30";
+    var predicate = PredicateParser<Person>.Parse(expression).Compile();
+    var result = predicate(john);
+    Console.WriteLine("result = " + result);
 
-#### Caveats
-- does not support double quotes
-- does not support real numbers with % operator
-- does not support an indexer expression that returns a boolean from dynamic objects.  For example, "[IsUpgraded]".  Workaround is to use "[IsUpgraded] == true"
+// returns "result = true"  
+```
 
- 
 
 #TODOS / Nice-to-Haves
 - support escaping double quotes
