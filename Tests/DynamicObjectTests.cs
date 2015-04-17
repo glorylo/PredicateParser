@@ -24,6 +24,14 @@ namespace Tests
         }
 
         [Test]
+        public void VerifyTrueProperty()
+        {
+            var expr = @"[Best Seller]";
+            var product = Product as IDictionary<string, object>;
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
+        }
+        
+        [Test]
         public void VerifyTrue()
         {
             var expr = @"[Best Seller] == true";

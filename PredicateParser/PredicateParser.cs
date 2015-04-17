@@ -151,7 +151,7 @@ namespace PredicateParser
           
           /// <summary>main entry point</summary>
           public static Expression<Func<TData, bool>> Parse(string s) { return new PredicateParser<TData>(s).Parse(); }
-          private Expression<Func<TData, bool>> Parse() { return Lambda(ParseExpression()); }
+          private Expression<Func<TData, bool>> Parse() { return Lambda(ExpressionHelper.Coerce(ParseExpression(), typeof(bool))); }
           private Expression ParseExpression()   { return ParseOr(); }
           private Expression ParseOr()           { return ParseBinary(ParseAnd, "||"); }
           private Expression ParseAnd()          { return ParseBinary(ParseEquality, "&&"); }

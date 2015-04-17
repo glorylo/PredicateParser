@@ -7,9 +7,9 @@ namespace PredicateParser
     {
         public static Expression Member(Expression lhs, string memberName)
         {
-              if (!lhs.Type.IsDynamic())
-                  return Expression.PropertyOrField(lhs, memberName);
-              return DynamicOp.GetMember(lhs, memberName);
+            if (!lhs.Type.IsDynamic())
+                return Expression.PropertyOrField(lhs, memberName);
+            return DynamicOp.GetMember(lhs, memberName);
         }
 
         public static Expression GetDictionaryValue(Expression lhs, string keyValue)
