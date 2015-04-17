@@ -37,56 +37,56 @@ namespace Tests
         public void VerifyIsFalse()
         {
             var expr = @"HasCar == false";
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr,Subject));
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
         public void VerifyIsTrue()
         {
             var expr = @"HasSiblings == true";
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Subject));
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
         public void VerifyNotTrue()
         {
             var expr = @"HasCar != true";
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Subject));
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
         public void VerifyNotFalse()
         {
             var expr = @"HasSiblings != false";
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Subject));
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
         public void VerifyNegateFalse()
         {
             var expr = @"!HasCar";
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Subject));
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
         public void VerifyPropertyAsTrue()
         {
             var expr = @"HasSiblings";
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Subject));
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
         public void VerifyNegateTrue()
         {
             var expr = @"!HasSiblings == false";
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Subject));
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
         public void VerifyOrCondition()
         {
             var expr = @"HasSiblings || HasCar";
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Subject));
+            Assert.IsTrue(EvalulateExpression(expr));
         }
 
     }
