@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using PredicateParser.Extensions;
 
 namespace PredicateParser
@@ -14,6 +15,7 @@ namespace PredicateParser
 
         public static Expression GetDictionaryValue(Expression lhs, string keyValue)
         {
+            lhs = ExpressionHelper.Coerce(lhs, typeof (IDictionary<string, object>));
             Expression keyExpr = Expression.Constant(keyValue, typeof(string));
             return Expression.Property(lhs, "Item", keyExpr);            
         }

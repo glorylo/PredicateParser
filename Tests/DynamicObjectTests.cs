@@ -64,6 +64,13 @@ namespace Tests
         }
 
         [Test]
+        public void VerifyIndexerOnDynamicEquals()
+        {
+            var expr = @"[Price] == 34.99";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+        
+        [Test]
         public void VerifyIndexerEquals()
         {
             var expr = @"[Inventory Status] == ""In Stock""";

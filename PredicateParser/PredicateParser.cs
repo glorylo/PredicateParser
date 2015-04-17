@@ -172,7 +172,8 @@ namespace PredicateParser
           private Expression ParseNestedIdent()
           {
               Expression expr = ParameterMemberExpression.Member(_param, CurrOptNext);
-              while (CurrOpAndNext(".") != null && IsIdent) expr = ParameterMemberExpression.Member(expr, CurrOptNext);
+              while (CurrOpAndNext(".") != null && IsIdent) 
+                  expr = ParameterMemberExpression.Member(expr, CurrOptNext);
               return expr;
           }
 
@@ -180,10 +181,11 @@ namespace PredicateParser
           {
               var keyValue = Regex.Replace(CurrOptNext, @"^\[(?:\s*)(.*?)(?:\s*)\]$", m => m.Groups[1].Value);
 
-              if (!typeof(IDictionary<string, object>).IsAssignableFrom(typeof(TData)))
-                 Abort("unsupported indexer for source type: " + typeof(TData));
+              if (typeof (IDictionary<string, object>).IsAssignableFrom(typeof (TData)))
+                  return ParameterMemberExpression.GetDictionaryValue(_param, keyValue);
 
-              return ParameterMemberExpression.GetDictionaryValue(_param, keyValue);
+              // add fallback to use member
+              return ParameterMemberExpression.Member(_param, keyValue);
           }      
 
           private Expression ParseString()     { return Const(Regex.Replace(CurrOptNext, "^\"(.*)\"$",
@@ -208,9 +210,11 @@ namespace PredicateParser
 
           private Expression ParseNested()
           {
-              if (CurrAndNext != "(") Abort("(...) expected");
+              if (CurrAndNext != "(") 
+                  Abort("(...) expected");
               Expression expr = ParseExpression();
-              if (CurrOptNext != ")") Abort("')' expected");
+              if (CurrOptNext != ")") 
+                  Abort("')' expected");
               return expr;
           }
           
@@ -219,7 +223,8 @@ namespace PredicateParser
           {
               Expression expr = parse();
               string op;
-              while ((op = CurrOpAndNext(ops)) != null) expr = _binaryOperators[op](expr, parse());
+              while ((op = CurrOpAndNext(ops)) != null) 
+                  expr = _binaryOperators[op](expr, parse());
               return expr;
           }
           #endregion
