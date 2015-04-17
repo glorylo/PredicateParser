@@ -89,21 +89,6 @@ namespace PredicateParser
 
           private readonly Dictionary<string, Func<Expression, Expression, Expression>> _binaryOperators; 
 
-          /// <summary>
-          /// Creates a expression for the reserved words:  StartsWith?, EndsWith?, etc.
-          /// </summary>
-          /// <param name="reservedWord">The reserved word</param>
-          /// <param name="lhs">The expression on the left hand side</param>
-          /// <param name="rhs">The expression on the right hand side</param>
-          /// <returns></returns>
-          private static Expression ReservedWordPredicate(string reservedWord, Expression lhs, Expression rhs)
-          {
-              if (!ReservedWords.Contains(reservedWord))
-                  Abort("unknown reserved word:  " + reservedWord);
-
-              return BuiltInReservedWords[reservedWord](lhs, rhs);
-          }
-
           private static readonly Dictionary<string, Func<Expression, Expression>> _unOp =
               new Dictionary<string, Func<Expression, Expression>>()
           {
@@ -144,12 +129,28 @@ namespace PredicateParser
                  { "Containing?", (lhs,rhs)=> ReservedWordPredicate("Containing?", lhs, rhs) },
                  { "Matching?", (lhs,rhs)=> ReservedWordPredicate("Matching?", lhs, rhs) },
                  { "Equals?", (lhs,rhs)=> ReservedWordPredicate("Equals?", lhs, rhs) }
-             };
-              
+             };              
           }
+
+          /// <summary>
+          /// Creates a expression for the reserved words:  StartsWith?, EndsWith?, etc.
+          /// </summary>
+          /// <param name="reservedWord">The reserved word</param>
+          /// <param name="lhs">The expression on the left hand side</param>
+          /// <param name="rhs">The expression on the right hand side</param>
+          /// <returns></returns>
+          private static Expression ReservedWordPredicate(string reservedWord, Expression lhs, Expression rhs)
+          {
+              if (!ReservedWords.Contains(reservedWord))
+                  Abort("unknown reserved word:  " + reservedWord);
+
+              return BuiltInReservedWords[reservedWord](lhs, rhs);
+          }
+
+          public static bool TryParse(string s) { try { Parse(s); } catch (Exception e) { Trace.WriteLine("Parsing exception: \n" + e.StackTrace); return false; } return true; }
+          
           /// <summary>main entry point</summary>
           public static Expression<Func<TData, bool>> Parse(string s) { return new PredicateParser<TData>(s).Parse(); }
-          public static bool TryParse(string s) { try { Parse(s); } catch (Exception e) { Trace.WriteLine("Parsing exception: \n" + e.StackTrace); return false; } return true; }
           private Expression<Func<TData, bool>> Parse() { return Lambda(ParseExpression()); }
           private Expression ParseExpression()   { return ParseOr(); }
           private Expression ParseOr()           { return ParseBinary(ParseAnd, "||"); }
