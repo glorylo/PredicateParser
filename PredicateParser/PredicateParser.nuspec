@@ -10,8 +10,19 @@
     <projectUrl>https://github.com/glorylo/PredicateParser</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Initial release of the PredicateParser.</releaseNotes>
     <copyright>Copyright 2015</copyright>
-    <tags>Predicate Expressions Parser Eval</tags>
+    <tags>Predicate Expressions Parser Eval String Text Simple </tags>
+	<releaseNotes>
+    0.2.0
+      - fix unintended bugs
+      - indexer expression that returns a boolean now works
+      - able to use indexer on dynamic objects as fallback
+
+    0.1.0
+      - supports dynamic objects
+      - added string built in predicates
+      - added indexer support for idictionary
+      - support for booleans
+	</releaseNotes>
   </metadata>
 </package>
