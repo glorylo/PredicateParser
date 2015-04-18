@@ -63,7 +63,16 @@ namespace PredicateParser
           protected bool IsReservedWord { get { return ReservedWords.Contains(Curr);  } }
           protected bool IsString { get { return Ch == '"'; } }
           protected bool IsIndexer { get { return Ch == '['; }}
-          protected bool IsIdent { get { char c = Ch; return !IsBool && !IsReservedWord && (char.IsLower(c) || char.IsUpper(c) || c == '_'); } }
+          protected bool IsIdent 
+          { 
+              get 
+              {
+                  char c = Ch;
+                  return !IsBool && !IsReservedWord && 
+                      (char.IsLower(c) || char.IsUpper(c) || c == '_'); 
+              } 
+          }
+
           /// <summary>throw an argument exception</summary>
           protected static void Abort(string msg) { throw new ArgumentException("Parse Error: " + (msg ?? "unknown error")); }
           /// <summary>get the current item of the stream or an empty string after the end</summary>
@@ -73,9 +82,9 @@ namespace PredicateParser
           /// <summary>get current and move to the next token if available</summary>
           protected string CurrOptNext { get { string s = Curr; Move(); return s; } }
           /// <summary>moves forward if current token matches and returns that (next token must exist)</summary>
-          protected string CurrOpAndNext(params string[] ops)
+          protected string CurrOpAndNext(params string[] operators)
           {
-              string s = ops.Contains(Curr) ? Curr : null;
+              string s = operators.Contains(Curr) ? Curr : null;
               if (s != null && !Move()) Abort("data expected");
               return s;
           }
@@ -211,11 +220,11 @@ namespace PredicateParser
           }
           
           /// <summary>generic parsing of binary expressions</summary>
-          private Expression ParseBinary(Func<Expression> parse, params string[] ops)
+          private Expression ParseBinary(Func<Expression> parse, params string[] operators)
           {
               Expression expr = parse();
               string op;
-              while ((op = CurrOpAndNext(ops)) != null) 
+              while ((op = CurrOpAndNext(operators)) != null) 
                   expr = _binaryOperators[op](expr, parse());
               return expr;
           }
