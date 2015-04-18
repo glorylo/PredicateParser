@@ -32,17 +32,31 @@ namespace PredicateParser
           protected static readonly string[] Booleans = { "true", "false" };
           protected static readonly string Null = "null";
 
+/*
           /// <summary>tokenizer pattern: Optional-SpaceS...Token...Optional-Spaces</summary>
           private static readonly string _pattern = @"\s*(" + string.Join("|", new []
           {              
               string.Join("|", ReservedWords.Select(Regex.Escape)), // reserved words                   
-              // operators and punctuation that are longer than one char: longest first
-              string.Join("|", Booleans.Select(Regex.Escape)),   // booleans
-              string.Join("|", Operators.Select(Regex.Escape)),  // operators
-              @"""(?:\\.|[^""])*""", // string
+              @"""((?:\\.|[^""])*)""", // string
+              @"""((?:\\?.)*?)""",
               @"\d+(?:\.\d+)?", // number with optional decimal part
               @"\w+", // word
               @"\[(?:\s*)((?:\w+\s*)+)(?:\s*)\]", // indexer for square brackets
+              // operators and punctuation that are longer than one char: longest first
+              string.Join("|", Booleans.Select(Regex.Escape)),   // booleans
+              string.Join("|", Operators.Select(Regex.Escape)),  // operators
+              @"\S", // other 1-char tokens (or eat up one character in case of an error)
+          }) + @")\s*";
+ */
+          private static readonly string _pattern = @"\s*(" + string.Join("|", new[]
+          {              
+              string.Join("|", ReservedWords.Select(Regex.Escape)), // reserved words  
+              @"(""(?:\\.|[^""])*"")", // string                 
+              // operators and punctuation that are longer than one char: longest first
+              string.Join("|", Operators.Select(Regex.Escape)),  // operators
+              @"\d+(?:\.\d+)?", // number with optional decimal part
+              @"\w+", // word
+              @"\[(?:\s*)((?:\w+\s*)+)(?:\s*)\]", // white space words in square brackets
               @"\S", // other 1-char tokens (or eat up one character in case of an error)
           }) + @")\s*";
 
@@ -62,9 +76,10 @@ namespace PredicateParser
           protected bool IsBool { get { return (Curr == "true") || (Curr == "false");  } }
           protected bool IsNumber { get { return char.IsNumber(Ch); } }
           protected bool IsDouble { get { return IsNumber && Curr.Contains('.'); } }
+          protected bool IsReservedWord { get { return ReservedWords.Contains(Curr);  } }
           protected bool IsString { get { return Ch == '"'; } }
           protected bool IsIndexer { get { return Ch == '['; }}
-          protected bool IsIdent { get { char c = Ch; return char.IsLower(c) || char.IsUpper(c) || c == '_'; } }
+          protected bool IsIdent { get { char c = Ch; return !IsReservedWord && (char.IsLower(c) || char.IsUpper(c) || c == '_'); } }
           /// <summary>throw an argument exception</summary>
           protected static void Abort(string msg) { throw new ArgumentException("Parse Error: " + (msg ?? "unknown error")); }
           /// <summary>get the current item of the stream or an empty string after the end</summary>
@@ -124,27 +139,12 @@ namespace PredicateParser
                  { "*",  (lhs,rhs)=>MathExpression.MathOp(lhs,rhs, ExpressionType.Multiply) },
                  { "/",  (lhs,rhs)=>MathExpression.MathOp(lhs,rhs, ExpressionType.Divide) },
                  { "%",  (lhs,rhs)=>MathExpression.MathOp(lhs,rhs, ExpressionType.Modulo) },
-                 { "StartsWith?", (lhs,rhs)=> ReservedWordPredicate("StartsWith?", lhs, rhs) },
-                 { "EndsWith?", (lhs,rhs)=> ReservedWordPredicate("EndsWith?", lhs, rhs) },
-                 { "Containing?", (lhs,rhs)=> ReservedWordPredicate("Containing?", lhs, rhs) },
-                 { "Matching?", (lhs,rhs)=> ReservedWordPredicate("Matching?", lhs, rhs) },
-                 { "Equals?", (lhs,rhs)=> ReservedWordPredicate("Equals?", lhs, rhs) }
+                 { "StartsWith?", (lhs,rhs)=> BuiltInReservedWords["StartsWith?"](lhs, rhs) },
+                 { "EndsWith?", (lhs,rhs)=> BuiltInReservedWords["EndsWith?"](lhs, rhs) },
+                 { "Containing?", (lhs,rhs)=> BuiltInReservedWords["Containing?"](lhs, rhs) },
+                 { "Matching?", (lhs,rhs)=> BuiltInReservedWords["Matching?"](lhs, rhs) },
+                 { "Equals?", (lhs,rhs)=> BuiltInReservedWords["Equals?"](lhs, rhs) }
              };              
-          }
-
-          /// <summary>
-          /// Creates a expression for the reserved words:  StartsWith?, EndsWith?, etc.
-          /// </summary>
-          /// <param name="reservedWord">The reserved word</param>
-          /// <param name="lhs">The expression on the left hand side</param>
-          /// <param name="rhs">The expression on the right hand side</param>
-          /// <returns></returns>
-          private static Expression ReservedWordPredicate(string reservedWord, Expression lhs, Expression rhs)
-          {
-              if (!ReservedWords.Contains(reservedWord))
-                  Abort("unknown reserved word:  " + reservedWord);
-
-              return BuiltInReservedWords[reservedWord](lhs, rhs);
           }
 
           public static bool TryParse(string s) { try { Parse(s); } catch (Exception e) { Trace.WriteLine("Parsing exception: \n" + e.StackTrace); return false; } return true; }
@@ -195,10 +195,10 @@ namespace PredicateParser
           private Expression ParsePrimary()
           {
               if (IsBool) return ParseBool();
-              if (IsIdent) return ParseNestedIdent();
-              if (IsIndexer) return ParseIndexer();
               if (IsString) return ParseString();
               if (IsNumber) return ParseNumber();
+              if (IsIndexer) return ParseIndexer();
+              if (IsIdent) return ParseNestedIdent();
               return ParseNested();
           }
 

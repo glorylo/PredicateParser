@@ -21,6 +21,7 @@ namespace Tests
             product["Quantity"] = 30;
             product["Best Seller"] = true;
             product["Sale Item"] = false;
+            product["Distance"] = "0.5 miles";
         }
 
         [Test]
@@ -95,30 +96,45 @@ namespace Tests
         }
 
         [Test]
-        public void VerifyIndexerContainingReservedWord()
+        public void VerifyRhsContainingReservedWord()
+        {
+            var expr = @"""There is Stuff In Stock"" Containing? [Inventory Status]";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyContainingReservedWord()
         {
             var expr = @"Description Containing? ""best widget""";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
+        
         [Test]
-        public void VerifyIndexerNotContainingReservedWord()
+        public void VerifyNotContainingReservedWord()
         {
             var expr = @"!(Description Containing? ""test"")";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
         [Test]
-        public void VerifyIndexerStartsWithReservedWord()
+        public void VerifyStartsWithReservedWord()
         {
             var expr = @"Description StartsWith? ""The best""";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
         [Test]
-        public void VerifyIndexerNotStartsWithReservedWord()
+        public void VerifyNotStartsWithReservedWord()
         {
             var expr = @"!(Description StartsWith? ""The test"")";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+        [Test]
+        public void VerifyIndexerEndsWithReservedWord()
+        {
+            var expr = @"Description EndsWith? ""wonders""";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
 
@@ -268,6 +284,15 @@ namespace Tests
             var expr = @"Price / 2.0 == 17.495";
             Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
         }
+
+        [Test]
+        public void VerifyNumbersInStringsCondition()
+        {
+            var expr = @"Distance EndsWith? ""miles""";
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+        }
+
+
 
         //  doesn't work
 /*
