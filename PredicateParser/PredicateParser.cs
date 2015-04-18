@@ -63,7 +63,7 @@ namespace PredicateParser
           protected bool IsReservedWord { get { return ReservedWords.Contains(Curr);  } }
           protected bool IsString { get { return Ch == '"'; } }
           protected bool IsIndexer { get { return Ch == '['; }}
-          protected bool IsIdent { get { char c = Ch; return !IsReservedWord && (char.IsLower(c) || char.IsUpper(c) || c == '_'); } }
+          protected bool IsIdent { get { char c = Ch; return !IsBool && !IsReservedWord && (char.IsLower(c) || char.IsUpper(c) || c == '_'); } }
           /// <summary>throw an argument exception</summary>
           protected static void Abort(string msg) { throw new ArgumentException("Parse Error: " + (msg ?? "unknown error")); }
           /// <summary>get the current item of the stream or an empty string after the end</summary>
@@ -163,12 +163,12 @@ namespace PredicateParser
 
           private Expression ParseIndexer()
           {
-              var keyValue = Regex.Replace(CurrOptNext, @"^\[(?:\s*)(.*?)(?:\s*)\]$", m => m.Groups[1].Value);
+              var key = Regex.Replace(CurrOptNext, @"^\[(?:\s*)(.*?)(?:\s*)\]$", m => m.Groups[1].Value);
 
               if (!typeof (IDictionary<string, object>).IsAssignableFrom(typeof (TData)))
                   Abort("unexpected source object type of:  " + typeof(TData));
               
-              return ParameterMemberExpression.GetDictionaryValue(_param, keyValue);
+              return ParameterMemberExpression.GetDictionaryValue(_param, key);
           }      
 
           private Expression ParseString()     { return Const(Regex.Replace(CurrOptNext, "^\"(.*)\"$",

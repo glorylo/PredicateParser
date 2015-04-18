@@ -13,10 +13,10 @@ namespace PredicateParser
             return DynamicOp.GetMember(lhs, memberName);
         }
 
-        public static Expression GetDictionaryValue(Expression lhs, string keyValue)
+        public static Expression GetDictionaryValue(Expression lhs, string key)
         {
             lhs = ExpressionHelper.Coerce(lhs, typeof (IDictionary<string, object>));
-            Expression keyExpr = Expression.Constant(keyValue, typeof(string));
+            Expression keyExpr = Expression.Constant(key, typeof(string));
             return Expression.Property(lhs, "Item", keyExpr);            
         }
 
