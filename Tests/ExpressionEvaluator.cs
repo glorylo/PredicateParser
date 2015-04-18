@@ -9,6 +9,7 @@ namespace Tests
         {
             var predicate = PredicateParser<TSourceObj>.Parse(expression);
             var compiledPredicate = predicate.Compile();
+            Trace.WriteLine("Expression:  " + expression);
             Trace.WriteLine(predicate);
             return compiledPredicate(source);                    
         }
