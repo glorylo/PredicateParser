@@ -181,11 +181,10 @@ namespace PredicateParser
           {
               var keyValue = Regex.Replace(CurrOptNext, @"^\[(?:\s*)(.*?)(?:\s*)\]$", m => m.Groups[1].Value);
 
-              if (typeof (IDictionary<string, object>).IsAssignableFrom(typeof (TData)))
-                  return ParameterMemberExpression.GetDictionaryValue(_param, keyValue);
-
-              // add fallback to use member
-              return ParameterMemberExpression.Member(_param, keyValue);
+              if (!typeof (IDictionary<string, object>).IsAssignableFrom(typeof (TData)))
+                  Abort("unexpected source object type of:  " + typeof(TData));
+              
+              return ParameterMemberExpression.GetDictionaryValue(_param, keyValue);
           }      
 
           private Expression ParseString()     { return Const(Regex.Replace(CurrOptNext, "^\"(.*)\"$",

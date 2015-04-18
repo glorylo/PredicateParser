@@ -1,10 +1,17 @@
 
 ## Release Notes
 
+### 0.2.2
+- reverted the to use of indexer on dynamic objects
+
+### 0.2.1
+- fix a bug wiht not checking correctly identifiers
+
+
 ### 0.2.0
 - fix unintended bugs
 - indexer expression that returns a boolean now works
-- able to use indexer on dynamic objects. however if member names includes spaces, it will not work.  Works for the following:  "Price > 30.00" or "[Price] > 30.00" for dynamic types.  
+- able to use indexer on dynamic objects. 
 
 ### 0.1.0
  

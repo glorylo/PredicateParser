@@ -13,6 +13,10 @@
     <copyright>Copyright 2015</copyright>
     <tags>Predicate Expressions Parser Eval String Text Simple </tags>
 	<releaseNotes>
+	
+	0.2.1
+	  - fix a bug wiht not checking correctly identifiers
+	  
     0.2.0
       - fix unintended bugs
       - indexer expression that returns a boolean now works
