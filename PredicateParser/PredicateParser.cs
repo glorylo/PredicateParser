@@ -86,9 +86,9 @@ namespace PredicateParser
       {
           #region code generator          
 
-          private readonly Dictionary<string, Func<Expression, Expression, Expression>> _binaryOperators; 
+          private Dictionary<string, Func<Expression, Expression, Expression>> _binaryOperators; 
 
-          private static readonly Dictionary<string, Func<Expression, Expression>> _unOp =
+          private Dictionary<string, Func<Expression, Expression>> _unaryOperators =
               new Dictionary<string, Func<Expression, Expression>>()
           {
               { "!", BooleanExpression.Not },
@@ -131,7 +131,16 @@ namespace PredicateParser
              };              
           }
 
-          public static bool TryParse(string s) { try { Parse(s); } catch (Exception e) { Trace.WriteLine("Parsing exception: \n" + e.StackTrace); return false; } return true; }
+          public static bool TryParse(string s) 
+          { 
+              try { Parse(s); } 
+              catch (Exception e) 
+              { 
+                 Trace.WriteLine("Parsing exception: \n" + e.StackTrace); 
+                 return false; 
+              } 
+              return true; 
+          }
           
           /// <summary>main entry point</summary>
           public static Expression<Func<TData, bool>> Parse(string s) { return new PredicateParser<TData>(s).Parse(); }
@@ -147,8 +156,8 @@ namespace PredicateParser
 
           private Expression ParseUnary()
           {
-            if (CurrOpAndNext("!") != null) return _unOp["!"](ParseUnary());
-            if (CurrOpAndNext("-") != null) return _unOp["-"](ParseUnary());
+            if (CurrOpAndNext("!") != null) return _unaryOperators["!"](ParseUnary());
+            if (CurrOpAndNext("-") != null) return _unaryOperators["-"](ParseUnary());
                return ParsePrimary();
           }
 
