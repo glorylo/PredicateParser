@@ -32,26 +32,10 @@ namespace PredicateParser
           protected static readonly string[] Booleans = { "true", "false" };
           protected static readonly string Null = "null";
 
-/*
-          /// <summary>tokenizer pattern: Optional-SpaceS...Token...Optional-Spaces</summary>
-          private static readonly string _pattern = @"\s*(" + string.Join("|", new []
-          {              
-              string.Join("|", ReservedWords.Select(Regex.Escape)), // reserved words                   
-              @"""((?:\\.|[^""])*)""", // string
-              @"""((?:\\?.)*?)""",
-              @"\d+(?:\.\d+)?", // number with optional decimal part
-              @"\w+", // word
-              @"\[(?:\s*)((?:\w+\s*)+)(?:\s*)\]", // indexer for square brackets
-              // operators and punctuation that are longer than one char: longest first
-              string.Join("|", Booleans.Select(Regex.Escape)),   // booleans
-              string.Join("|", Operators.Select(Regex.Escape)),  // operators
-              @"\S", // other 1-char tokens (or eat up one character in case of an error)
-          }) + @")\s*";
- */
           private static readonly string _pattern = @"\s*(" + string.Join("|", new[]
           {              
               string.Join("|", ReservedWords.Select(Regex.Escape)), // reserved words  
-              @"(""(?:\\.|[^""])*"")", // string                 
+              @"""((?:\\.|[^""])*)""", // not sure if this made a diff.  
               // operators and punctuation that are longer than one char: longest first
               string.Join("|", Operators.Select(Regex.Escape)),  // operators
               @"\d+(?:\.\d+)?", // number with optional decimal part
