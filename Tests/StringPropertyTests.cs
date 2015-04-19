@@ -14,7 +14,7 @@ namespace Tests
         private bool EvalulateExpression(string expression)
         {
             Subject.Inspect();
-            return ExpressionEvaluator.Evaluate(expression, People.John);
+            return ExpressionEvaluator.Evaluate(expression, Subject);
         }
 
         [SetUp]
@@ -110,14 +110,14 @@ namespace Tests
         [Test]
         public void VerifyPropertyMatching()
         {
-            var expr = @"PostalCode Matching? ""[A-Z]\d[A-Z]\d[A-Z]\d""";
+            var expr = @"FirstName Matching? ""Sarah|John""";
             Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
         public void VerifyPropertyNotMatching()
         {
-            var expr = @"PostalCode Matching? ""[a-z]\d[a-z]\d[a-z]\d""";
+            var expr = @"FirstName Matching? ""[a-z]\d[a-z]\d[a-z]\d""";
             Assert.IsFalse(EvalulateExpression(expr));
         }
 
@@ -168,6 +168,13 @@ namespace Tests
         {
             var expr = @"Address.Zip  == ""90210""";
             Assert.Throws(typeof(System.ArgumentException), () => EvalulateExpression(expr));
-        }    
+        }
+        [Test]
+        public void VerifyNestedPropertyMatching()
+        {
+            var expr = @"Address.PostalCode Matching? ""[A-Z]\d[A-Z]\d[A-Z]\d""";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
     }
 }

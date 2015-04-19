@@ -11,7 +11,7 @@ namespace Tests
         private bool EvalulateExpression(string expression)
         {
             Subject.Inspect();
-            return ExpressionEvaluator.Evaluate(expression, People.John);
+            return ExpressionEvaluator.Evaluate(expression, Subject);
         }
 
         [SetUp]
