@@ -176,5 +176,12 @@ namespace PredicateParser.Tests
             Assert.IsTrue(EvalulateExpression(expr));
         }
 
+        [Test]
+        public void VerifyEscapeDoubleQuote()
+        {
+            var expr = @"FavoriteQuote == ""\""No pain no gain\""""";
+           Assert.IsTrue(EvalulateExpression(expr));
+        }
+
     }
 }

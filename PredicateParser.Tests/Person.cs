@@ -19,6 +19,7 @@ namespace PredicateParser.Tests
         public bool HasSiblings { get; set; }
         public bool HasCar { get; set; }
         public Address Address { get; set; }
+        public string FavoriteQuote = @"""No pain no gain""";
 
         public void Inspect()
         {
