@@ -35,7 +35,7 @@ namespace Tests
         }
     }
 
-    public static class People
+    static public class People
     {
         static public Person John = new Person
         {

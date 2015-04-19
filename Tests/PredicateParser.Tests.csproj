@@ -52,10 +52,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BooleanPropertyTest.cs" />
+    <Compile Include="DictionaryTests.cs" />
     <Compile Include="DynamicObjectTests.cs" />
     <Compile Include="ExpressionEvaluator.cs" />
     <Compile Include="NumberPropertyTests.cs" />
     <Compile Include="Person.cs" />
+    <Compile Include="Product.cs" />
     <Compile Include="StringPropertyTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

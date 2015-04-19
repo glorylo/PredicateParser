@@ -8,352 +8,165 @@ namespace Tests
     [TestFixture]
     public class DynamicObjectTests
     {
-        public dynamic Product { get; set; }
+        public dynamic Car { get; set; }
 
-
-        private void TraceProductAndExpression(string expression)
+        #region trace
+        private void TraceCarAndExpression(string expression)
         {
-            var product = Product as IDictionary<string, object>;
-            Trace.WriteLine("Expression:  " + expression);
-            Trace.WriteLine("Id:  " + product["Id"]);
-            Trace.WriteLine("Description:  " + product["Description"]);
-            Trace.WriteLine("Price:  " + product["Price"]);
-            Trace.WriteLine("Inventory Status:  " + product["Inventory Status"]);
-            Trace.WriteLine("Quantity:  " + product["Quantity"]);
-            Trace.WriteLine("Best Seller:  " + product["Best Seller"]);
-            Trace.WriteLine("Sale Item:  " + product["Sale Item"]);
-            Trace.WriteLine("Distance:  " + product["Distance"]);
+            Trace.WriteLine("Exression: " + expression);
+            Product.InspectCar();
         }
+        #endregion
 
         [SetUp]
         public void BeforeTest()
         {
-            Product = new ExpandoObject();
-            var product = Product as IDictionary<string, object>;
-            product["Id"] = "1234567";
-            product["Description"] = "The best widget for your household.  Works wonders";
-            product["Price"] = 34.99;
-            product["Inventory Status"] = "In Stock";
-            product["Quantity"] = 30;
-            product["Best Seller"] = true;
-            product["Sale Item"] = false;
-            product["Distance"] = "0.5 miles";
+            Car = Product.CreateCar();
         }
 
         [Test]
-        public void VerifyTrueProperty()
+        public void VerifyEqualsMake()
         {
-            var expr = @"[Best Seller]";
-            var product = Product as IDictionary<string, object>;
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
-        }
-        
-        [Test]
-        public void VerifyTrue()
-        {
-            var expr = @"[Best Seller] == true";
-            var product = Product as IDictionary<string, object>;
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
+            var expr = @"Make == ""Honda""";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyFalse()
+        public void VerifyNotEqualsMake()
         {
-            var expr = @"[Sale Item] == false";
-            var product = Product as IDictionary<string, object>;
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
+            var expr = @"Make != ""Toyota""";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyBoolNotEquals()
+        public void VerifyNegateEqualsModel()
         {
-            var expr = @"[Sale Item] != true";
-            var product = Product as IDictionary<string, object>;
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
+            var expr = @"!(Model == ""Taurus"")";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyNegateBool()
+        public void VerifyDoorsGreaterThan()
         {
-            var expr = @"![Sale Item] == true";
-            var product = Product as IDictionary<string, object>;
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
+            var expr = @"NumberOfDoors > 2";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyIndexerOnDynamicEquals()
+        public void VerifyDoorsGreaterThanEquals()
         {
-            var expr = @"[Price] == 34.99";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-        
-        [Test]
-        public void VerifyIndexerEquals()
-        {
-            var expr = @"[Inventory Status] == ""In Stock""";
-            var product = Product as IDictionary<string, object>;
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
+            var expr = @"NumberOfDoors >= 4";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyIndexerNotEquals()
+        public void VerifyYearLessThan()
         {
-            var expr = @"[Inventory Status] != ""Available""";
-            var product = Product as IDictionary<string, object>;
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
-        }
-        
-        [Test]
-        public void VerifyIndexerWithEqualsReservedWord()
-        {
-            var expr = @"[Inventory Status] Equals? ""In Stock""";
-            var product = Product as IDictionary<string, object>;
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, product));
+            var expr = @"Year < 2003";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyRhsContainingReservedWord()
+        public void VerifyYearLessThanEquals()
         {
-            var expr = @"""There is Stuff In Stock"" Containing? [Inventory Status]";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"Year <= 2002";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyContainingReservedWord()
+        public void VerifyPriceAddAirConditioning()
         {
-            var expr = @"Description Containing? ""best widget""";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        
-        [Test]
-        public void VerifyNotContainingReservedWord()
-        {
-            var expr = @"!(Description Containing? ""test"")";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"Price + 1200.99 ==  16200.99";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyStartsWithReservedWord()
+        public void VerifyPriceMultWithTaxRate()
         {
-            var expr = @"Description StartsWith? ""The best""";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"Price * 1.05 == 15750.0";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyNotStartsWithReservedWord()
+        public void VerifyPriceDivPayment()
         {
-            var expr = @"!(Description StartsWith? ""The test"")";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"Price / 10.0 ==  1500.00";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyIndexerEndsWithReservedWord()
+        public void VerifyFourDoorsOrHybrid()
         {
-            var expr = @"Description EndsWith? ""wonders""";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"Hybrid || NumberOfDoors >= 4";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyIntPropertyEquals()
+        public void VerifyNotHybridAndHasMp3()
         {
-            var expr = @"Price == 34.99";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"!Hybrid && HasMp3";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyIntPropertyNotEquals()
+        public void VerifyDealerContainsImport()
         {
-            var expr = @"Price != 35.99";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"Dealer.Name Containing? ""Import""";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyNegateIntPropertyEquals()
+        public void VerifyDealerStartsWith604()
         {
-            var expr = @"!(Price == 30.99)";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"Dealer.PhoneNumber StartsWith? ""604""";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyLessThanCondition()
+        public void VerifyDealerEndsWith()
         {
-            var expr = @"Price < 40";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"Dealer.Distance EndsWith? ""kilometers""";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyLessThanOrEqualCondition()
+        public void VerifyDealerSalesHigherThan()
         {
-            var expr = @"Price <= 34.99";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"Dealer.HighestSale > 51000.00";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyGreaterThanCondition()
+        public void VerifyTopSellerOrRank()
         {
-            var expr = @"Price > 33.99";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"(Dealer.TopSeller || Dealer.Rank > 12) && Price < 16000.00";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
 
         [Test]
-        public void VerifyGreaterThanOrEqualCondition()
+        public void VerifyModPriceBy1()
         {
-            var expr = @"Price >= 34.99";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
+            var expr = @"Price % 5.0 == 0";
+            TraceCarAndExpression(expr);
+            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Car));
         }
-
-        [Test]
-        public void VerifyOrCondition()
-        {
-            var expr = @"Price == 44.99 || Quantity > 20";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyAndCondition()
-        {
-            var expr = @"Price < 50.00 && Quantity >= 30";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyNegativeIntCondition()
-        {
-            var expr = @"-Quantity  == -30";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-       
-        [Test]
-        public void VerifyAddCondition()
-        {
-            var expr = @"Quantity + 10 == 40";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifySubtractCondition()
-        {
-            var expr = @"Quantity - 10 == 20";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyMultiplyCondition()
-        {
-            var expr = @"Quantity * 5 == 150";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyDivCondition()
-        {
-            var expr = @"Quantity / 2 == 15";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyModCondition()
-        {
-            var expr = @"Quantity % 5 == 0";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyNestedMathCondition()
-        {
-            var expr = @"Quantity + (3 * 5) == 45";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyNegativeRealCondition()
-        {
-            var expr = @"-Price  == -34.99";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyRealNumberAddCondition()
-        {
-            var expr = @"Price + 10.01 == 45.0";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyRealNumberSubtractCondition()
-        {
-            var expr = @"Price - 10.99 == 24.0";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyRealMultCondition()
-        {
-            var expr = @"Price * 2.0 == 69.98";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyRealDivCondition()
-        {
-            var expr = @"Price / 2.0 == 17.495";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        [Test]
-        public void VerifyNumbersInStringsCondition()
-        {
-            var expr = @"Distance EndsWith? ""miles""";
-            TraceProductAndExpression(expr);
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-
-        //  doesn't work
-/*
-        [Test]
-        public void VerifyRealModCondition()
-        {
-            var expr = @"Price % 1.0 == 34.99";
-            Assert.IsTrue(ExpressionEvaluator.Evaluate(expr, Product));
-        }
-*/
 
 
     }
