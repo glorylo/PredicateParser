@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Dynamic;
 using NUnit.Framework;
 
-namespace Tests
+namespace PredicateParser.Tests
 {
     [TestFixture]
     public class DynamicObjectTests

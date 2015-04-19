@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
-namespace Tests
+namespace PredicateParser.Tests
 {
     [TestFixture]
-    public class BooleanPropertyTest
+    public class BooleanPropertyTests
     {
         public Person Subject { get; set; }
 

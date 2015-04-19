@@ -1,7 +1,7 @@
 PredicateParser/bin/
 PredicateParser/obj/
-Tests/bin/
-Tests/obj/
+PredicateParser.Tests/bin/
+PredicateParser.Tests/obj/
 *.v12.suo
 .nuget/
 packages/

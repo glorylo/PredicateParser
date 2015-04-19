@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Tests
+namespace PredicateParser.Tests
 {
     public class Address
     {

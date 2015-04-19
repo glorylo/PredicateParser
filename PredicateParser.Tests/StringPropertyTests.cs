@@ -3,7 +3,7 @@ using NUnit.Framework;
 using PredicateParser;
 
 
-namespace Tests
+namespace PredicateParser.Tests
 {
     [TestFixture]
     public class StringPropertyTests

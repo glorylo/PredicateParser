@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using PredicateParser;
 
-namespace Tests
+namespace PredicateParser.Tests
 {
     public static class ExpressionEvaluator
     {
