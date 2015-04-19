@@ -135,6 +135,39 @@ namespace Tests
             Assert.IsTrue(EvalulateExpression(expr));
         }
 
+        [Test]
+        public void VerifyNestedStringProperty()
+        {
+            var expr = @"Address.City == ""Vancouver""";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
 
+        [Test]
+        public void VerifyNestedStringContainsProperty()
+        {
+            var expr = @"Address.Street Containing? ""Robson""";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyNestedStringNotContainingProperty()
+        {
+            var expr = @"!(Address.Street Containing? ""Hastings"")";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyNestedStringNotEqualsProperty()
+        {
+            var expr = @"Address.City != ""Burnaby""";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+
+        [Test]
+        public void VerifyNestedUnknownProperty()
+        {
+            var expr = @"Address.Zip  == ""90210""";
+            Assert.Throws(typeof(System.ArgumentException), () => EvalulateExpression(expr));
+        }    
     }
 }
