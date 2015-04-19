@@ -63,7 +63,7 @@ namespace PredicateParser
           protected bool IsReservedWord { get { return ReservedWords.Contains(Curr);  } }
           protected bool IsString { get { return Ch == '"'; } }
           protected bool IsIndexer { get { return Ch == '['; }}
-          protected bool IsIdent 
+          protected bool IsIdentifer 
           { 
               get 
               {
@@ -174,7 +174,7 @@ namespace PredicateParser
           private Expression ParseNestedIdent()
           {
               Expression expr = ParameterMemberExpression.Member(_param, CurrOptNext);
-              while (CurrOpAndNext(".") != null && IsIdent) 
+              while (CurrOpAndNext(".") != null && IsIdentifer) 
                   expr = ParameterMemberExpression.Member(expr, CurrOptNext);
               return expr;
           }
@@ -199,7 +199,7 @@ namespace PredicateParser
               if (IsString) return ParseString();
               if (IsNumber) return ParseNumber();
               if (IsIndexer) return ParseIndexer();
-              if (IsIdent) return ParseNestedIdent();
+              if (IsIdentifer) return ParseNestedIdent();
               return ParseNested();
           }
 

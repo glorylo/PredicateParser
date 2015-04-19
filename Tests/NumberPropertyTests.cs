@@ -11,22 +11,13 @@ namespace Tests
         private bool EvalulateExpression(string expression)
         {
             Subject.Inspect();
-            return ExpressionEvaluator.Evaluate(expression, Subject);
+            return ExpressionEvaluator.Evaluate(expression, People.John);
         }
 
         [SetUp]
         public void BeforeTest()
         {
-            Subject = new Person
-            {
-                 FirstName = "John", 
-                 LastName = "Smith", 
-                 Age = 60, 
-                 Salary = 2300.50, 
-                 PostalCode = "V5H0A7", 
-                 HasCar = false, 
-                 HasSiblings = true
-            };
+            Subject = People.John;
         }
 
         [Test]
@@ -60,8 +51,7 @@ namespace Tests
         [Test]
         public void VerifyIntLessThanProperty()
         {
-            var expr = @"Age < 60";
-            Subject.Age = 50;
+            var expr = @"Age < 61";
             Assert.IsTrue(EvalulateExpression(expr));
         }
 
@@ -82,16 +72,14 @@ namespace Tests
         [Test]
         public void VerifyIntOutOfRangeUpperBoundProperty()
         {
-            var expr = @"Age > 60 || Age < 60";
-            Subject.Age = 61;
+            var expr = @"Age < 61 || Age > 59 ";
             Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
         public void VerifyIntOutOfRangeLowerBoundProperty()
         {
-            var expr = @"Age > 60 || Age < 60";
-            Subject.Age = 59;
+            var expr = @"Age > 60 || Age < 62";
             Assert.IsTrue(EvalulateExpression(expr));
         }
 
@@ -145,18 +133,22 @@ namespace Tests
         }
 
         [Test]
+        public void VerifyRealNotOutOfRangeBetweenProperty()
+        {
+            var expr = @"!(Salary > 2400 && Salary < 2350)";
+            Assert.IsTrue(EvalulateExpression(expr));
+        }
+        [Test]
         public void VerifyRealOutOfRangeUpperBoundProperty()
         {
-            var expr = @"Salary > 2300.60 || Salary < 2000";
-            Subject.Salary = 2300.61;
+            var expr = @"Salary > 2300 || Salary < 2300.51";
             Assert.IsTrue(EvalulateExpression(expr));
         }
 
         [Test]
         public void VerifyRealOutOfRangeLowerBoundProperty()
         {
-            var expr = @"Salary > 2300.60 || Salary < 2000";
-            Subject.Salary = 1999.99;
+            var expr = @"Salary > 2400.50 || Salary < 2300.60";
             Assert.IsTrue(EvalulateExpression(expr));            
         }
 

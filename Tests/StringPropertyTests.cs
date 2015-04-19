@@ -8,27 +8,19 @@ namespace Tests
     [TestFixture]
     public class StringPropertyTests
     {
-        public Person Subject  { get; set; }
+
+        public Person Subject { get; set; }
 
         private bool EvalulateExpression(string expression)
         {
             Subject.Inspect();
-            return ExpressionEvaluator.Evaluate(expression, Subject);
+            return ExpressionEvaluator.Evaluate(expression, People.John);
         }
 
         [SetUp]
         public void BeforeTest()
         {
-            Subject = new Person
-            {
-                FirstName = "John", 
-                LastName = "Smith", 
-                Age = 60, 
-                Salary = 2300.50, 
-                PostalCode = "V5H0A7", 
-                HasCar = false, 
-                HasSiblings = true
-            };
+            Subject = People.John;
         }
 
         [Test]
