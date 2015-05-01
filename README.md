@@ -7,7 +7,7 @@ I wanted to write simple expressions without the full blown solution of Dynamic 
 
 I wanted something simpler and a basic language to declare predicates on some object.  Hence, this solution.  It is a basic predicate parser that takes in string and evaluates it onto a source object.  
 
-This work is originally based from PredicateParser by Andreas Gieriet. See this Article:  http://www.codeproject.com/Articles/355513/Invent-your-own-Dynamic-LINQ-parser
+This work is originally based from PredicateParser by Andreas Gieriet. See [this article](http://www.codeproject.com/Articles/355513/Invent-your-own-Dynamic-LINQ-parser).
 
 I have added new features such as the support of booleans, dynamic objects, built-in string predicates, nested types, etc.  
 
