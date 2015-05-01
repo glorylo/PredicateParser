@@ -16,7 +16,7 @@ I have added new features such as the support of booleans, dynamic objects, buil
 The easiest way to install by using Nuget Package Manager via console:
 
 ```
-Install-Package PredicateParser
+PM> Install-Package PredicateParser
 ```
 
 # Usage
@@ -44,7 +44,7 @@ Console.WriteLine("result = " + result); // returns "result = true"
 - registering variable names that can be set a value
 - Make the parser customizable at run-time to add new predicates
 - Support multi arguments for predicates via function calls
-- Smarter type conversion for math operations (float * float) => double for example
+- Smarter type conversion for math operations 
 
 Have fun!
 
