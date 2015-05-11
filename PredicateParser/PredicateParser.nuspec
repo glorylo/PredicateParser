@@ -21,7 +21,7 @@
 	  - get member can no longer use indexer
 	
 	0.2.1
-	  - fix a bug wiht not checking correctly identifiers
+	  - fix a bug with not checking correctly identifiers
 	  
     0.2.0
       - fix unintended bugs
