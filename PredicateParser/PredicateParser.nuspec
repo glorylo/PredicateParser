@@ -14,6 +14,12 @@
     <tags>Predicate Expressions Parser Eval String Text Simple </tags>
 	<releaseNotes>
 	
+	0.2.3
+	  - maintanence release
+	
+	0.2.2 
+	  - get member can no longer use indexer
+	
 	0.2.1
 	  - fix a bug wiht not checking correctly identifiers
 	  

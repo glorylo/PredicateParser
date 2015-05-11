@@ -25,9 +25,24 @@ Example of using the parser:
 
 ```cs
 
-var john = new Person()  { Name = "John", Age = 35 };
+var john = new Person()          
+      {
 
-var expression = @"Age > 30";
+            FirstName = "John",
+            LastName = "Smith",
+            Age = 60,
+            Salary = 2300.50,
+            HasCar = false,
+            HasSiblings = true,
+            Address = new Address
+            {
+                Street = "123 Robson Street",
+                City = "Vancouver",
+                PostalCode = "V5H0A7",
+            }
+};
+
+var expression = @"Age > 50";
 
 var predicate = PredicateParser<Person>.Parse(expression).Compile();
 
@@ -37,12 +52,41 @@ Console.WriteLine("result = " + result); // returns "result = true"
 ```
 
 
+# Other example expressions:
+
+
+```cs
+
+// using ANDs with &&
+
+expression = @"Age > 30 && Name == ""John""";
+ 
+// using negation !
+
+expression = @"!(Age == 50)";
+
+// using ORs with ||
+
+expression = @"Age < 61 || Age > 59 ";
+
+// using nesting
+
+expression = @"Address.Zip  == ""90210""";
+
+
+// using built-in string predicates
+
+expression = @"Address.PostalCode Matching? ""[A-Z]\d[A-Z]\d[A-Z]\d""";
+
+```
+
 #TODOS / Nice-to-Haves
 - support escaping double quotes
+- does not support operator precedence rules 
 - Add null types
 - Support enum types
 - registering variable names that can be set a value
-- Make the parser customizable at run-time to add new predicates
+- Make the parser customization at run-time to add new predicates
 - Support multi arguments for predicates via function calls
 - Smarter type conversion for math operations 
 
