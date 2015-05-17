@@ -12,27 +12,26 @@
     <description>$description$</description>
     <copyright>Copyright 2015</copyright>
     <tags>Predicate Expressions Parser Eval String Text Simple </tags>
-	<releaseNotes>
+<releaseNotes>
+0.2.3
+- maintanence release
 	
-	0.2.3
-	  - maintanence release
+0.2.2
+- get member can no longer use indexer
 	
-	0.2.2 
-	  - get member can no longer use indexer
-	
-	0.2.1
-	  - fix a bug with not checking correctly identifiers
+0.2.1
+- fix a bug with not checking correctly identifiers
 	  
-    0.2.0
-      - fix unintended bugs
-      - indexer expression that returns a boolean now works
-      - able to use indexer on dynamic objects as fallback
+0.2.0
+- fix unintended bugs
+- indexer expression that returns a boolean now works
+- able to use indexer on dynamic objects as fallback
 
-    0.1.0
-      - supports dynamic objects
-      - added string built in predicates
-      - added indexer support for idictionary
-      - support for booleans
-	</releaseNotes>
+0.1.0
+- supports dynamic objects
+- added string built in predicates
+- added indexer support for idictionary
+- support for booleans
+</releaseNotes>
   </metadata>
 </package>
