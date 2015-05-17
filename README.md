@@ -23,11 +23,9 @@ PM> Install-Package PredicateParser
 
 Example of using the parser:
 
-```cs
-
+```csharp
 var john = new Person()          
       {
-
             FirstName = "John",
             LastName = "Smith",
             Age = 60,
@@ -41,43 +39,29 @@ var john = new Person()
                 PostalCode = "V5H0A7",
             }
 };
-
 var expression = @"Age > 50";
-
 var predicate = PredicateParser<Person>.Parse(expression).Compile();
-
 var result = predicate(john);
-
 Console.WriteLine("result = " + result); // returns "result = true"  
 ```
 
-
 # Other example expressions:
 
-
-```cs
-
+```csharp
 // using ANDs with &&
-
 expression = @"Age > 30 && Name == ""John""";
  
 // using negation !
-
 expression = @"!(Age == 50)";
 
 // using ORs with ||
-
 expression = @"Age < 61 || Age > 59 ";
 
 // using nesting
-
 expression = @"Address.Zip  == ""90210""";
 
-
 // using built-in string predicates
-
 expression = @"Address.PostalCode Matching? ""[A-Z]\d[A-Z]\d[A-Z]\d""";
-
 ```
 
 #TODOS / Nice-to-Haves
