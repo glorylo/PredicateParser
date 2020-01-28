@@ -20,6 +20,8 @@ namespace PredicateParser.Tests
         public bool HasCar { get; set; }
         public Address Address { get; set; }
 
+        public PersonGender Gender { get; set; }
+
         public void Inspect()
         {
             Trace.WriteLine("First Name:  " + FirstName);
@@ -32,6 +34,7 @@ namespace PredicateParser.Tests
             Trace.WriteLine("Address Suite Number: " + Address.SuiteNumber);
             Trace.WriteLine("Address City:  " + Address.City);
             Trace.WriteLine("Postal Code:  " + Address.PostalCode);
+            Trace.WriteLine("Gender:  " + Gender);
         }
     }
 
@@ -50,8 +53,15 @@ namespace PredicateParser.Tests
                 Street = "123 Robson Street",
                 City = "Vancouver",
                 PostalCode = "V5H0A7",
-            }
+            },
+            Gender = PersonGender.MALE
         };
 
     } 
+
+    public enum PersonGender
+    {
+        MALE,
+        FEMALE
+    }
 }

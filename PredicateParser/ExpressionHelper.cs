@@ -11,8 +11,12 @@ namespace PredicateParser
             typeof(int), typeof(ushort), typeof(char), typeof(short), typeof(byte), typeof(sbyte) };
         
         /// <summary>enforce the type on the expression (by a cast) if not already of that type</summary>
-        public static Expression Coerce(Expression expr, Type type)
+        public static Expression Coerce(Expression expr, Type type, bool useToString = false)
         {
+            if (useToString && type == typeof(string) && expr.Type != type)
+            {
+                return Expression.Call(expr, typeof(object).GetMethod("ToString"));
+            }
             return expr.Type == type ? expr : Expression.Convert(expr, type);
         }
 

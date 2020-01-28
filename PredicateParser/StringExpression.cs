@@ -35,8 +35,8 @@ namespace PredicateParser
 
         public static Expression Equals(Expression lhs, Expression rhs)
         {
-            lhs = ExpressionHelper.Coerce(lhs, _string);
-            rhs = ExpressionHelper.Coerce(rhs, _string);
+            lhs = ExpressionHelper.Coerce(lhs, _string, true);
+            rhs = ExpressionHelper.Coerce(rhs, _string, true);
             return Expression.Call(lhs, GetMethodInfo("Equals", new[] {typeof (string)}), new[] {rhs});
         }
 
